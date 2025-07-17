@@ -9,12 +9,20 @@ const socket = io("/", {
 });
 
 socket.on("game:playerCard", (color: Color) => {
-  if (!game.started) addPlayer(color)
-  else {
+  if (!game.started) {
+    addPlayer(color)
+    console.log(`added player: ${color} successfully!`)
+
+    if (game.players.length >= 1) game.started = true;
+  } else {
     if (game.currentPlayerColor === undefined) {
       game.currentPlayerColor = color;
+
+      console.log(`${color} is now the active player`)
     } else if (game.currentPlayerColor === color) {
       game.currentPlayerColor = undefined;
+
+      console.log(`${color} is no longer the active player`)
     } else {
       //todo pay to other player
     }
@@ -23,26 +31,26 @@ socket.on("game:playerCard", (color: Color) => {
 
 socket.on("game:propertyCard", (id: number) => {
   if (!game.started) {
-    alert("game not started");
+    console.error("game not started");
     return;
   }
 
   if (game.currentPlayerColor === undefined) {
-    alert("no player selected");
+    console.error("no player selected");
     return;
   }
 
   let property = getPropertyById(id);
 
   if (property === undefined) {
-    alert("illegal id");
+    console.error("illegal id");
     return;
   }
 
   let playerByColor = getPlayerByColor(game.currentPlayerColor);
 
   if (playerByColor === undefined) {
-    alert("player search error");
+    console.error("player search error");
     return;
   }
 
@@ -66,18 +74,28 @@ socket.on("game:propertyCard", (id: number) => {
       hotelCount: 0
     }
 
-    playerByColor.cards.properties.push(inGameProperty)
+    playerByColor.cards.properties.push(inGameProperty);
+    playerByColor.money -= property.purchasePrice;
+
+    console.log(`you have bought ${property.street}`);
   } else {
     let inGameProperty = getInGamePropertyById(playerByColor, id)!;
 
-    if (inGameProperty.houseCount + 1 <= 4 && playerByColor.money >= property.housePrice) {
+    if (inGameProperty.hotelCount === 1) {
+      console.log("you have reached the maximum house/hotel capacity")
+    } else if (inGameProperty.houseCount + 1 <= 4 && playerByColor.money >= property.housePrice) {
       inGameProperty.houseCount++;
-      return;
+
+      playerByColor.money -= property.housePrice;
+
+      console.log(`you have successfully built a house on ${property.street}`)
     } else if (inGameProperty.houseCount === 4 && playerByColor.money >= property.hotelPrice) {
       inGameProperty.houseCount = 0;
       inGameProperty.hotelCount = 1;
-    } else if (inGameProperty.hotelCount === 1) {
-      console.log("you have reached the maximum house/hotel capacity")
+
+      playerByColor.money -= property.hotelPrice;
+
+      console.log(`you have successfully built a hotel on ${property.street}`)
     } else {
       console.log("you don't have enough money to buy a house");
     }
@@ -85,51 +103,29 @@ socket.on("game:propertyCard", (id: number) => {
 })
 
 function getPlayerByColor(color: Color): Player | undefined {
-  game.players.forEach((player: Player) => {
-    if (player.color === color) return player;
-  })
-
-  return undefined;
+  return game.players.find((player: Player) => player.color === color);
 }
 
 function getPropertyById(id: number): Property | undefined {
-  game.cards.properties.forEach((property: Property) => {
-    if (property.id === id) return property;
-  })
-
-  return undefined;
+  return game.cards.properties.find((property: Property) => property.id === id);
 }
 
 function getInGamePropertyById(player: Player, id: number): InGameProperty | undefined {
-  player.cards.properties.forEach((property: InGameProperty) => {
-    if (property.property.id === id) return property;
-  })
-
-  return undefined;
+  return player.cards.properties.find((property: InGameProperty) => property.property.id === id);
 }
 
 function hasPlayerPropertyCard(player: Player, id: number): boolean {
-  player.cards.properties.forEach((property: InGameProperty) => {
-    if (property.property.id === id) return true;
-  })
-  return false;
+  return player.cards.properties.some((property: InGameProperty) => property.property.id === id);
 }
 
 function isCardAvailable(id: number): boolean {
-  game.cards.properties.forEach((property: Property) => {
-    if (property.id === id) return true;
-  })
-
-  game.cards.lines.forEach((lines: Extra) => {
-    if (lines.id === id) return true;
-  })
-
-  game.cards.companies.forEach((company: Extra) => {
-    if (company.id === id) return true;
-  })
-
-  return false;
+  return (
+      game.cards.properties.some((property: Property) => property.id === id) ||
+      game.cards.lines.some((line: Extra) => line.id === id) ||
+      game.cards.companies.some((company: Extra) => company.id === id)
+  );
 }
+
 
 function addPlayer(color: Color) {
   const player: Player = {
@@ -140,7 +136,7 @@ function addPlayer(color: Color) {
     },
     color: color,
     hasEscapePrisonCard: false,
-    money: 1500
+    money: 500
   }
 
   game.players.push(player);
