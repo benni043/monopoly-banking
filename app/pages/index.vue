@@ -10,6 +10,8 @@ socket.on("game:update", (msg: string) => {
   console.log(msg)
 })
 
+
+
 </script>
 
 <template>
