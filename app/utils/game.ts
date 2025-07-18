@@ -135,8 +135,8 @@ export class Game {
         if (!hasProperty) {
             if (this.trade.active) {
                 console.log("this property does not belong to anyone yet, you cant trade this")
-                this.trade.active = false;
-                this.trade.tradePlayer = undefined;
+
+                this.disableTrade();
                 return;
             }
 
@@ -210,11 +210,25 @@ export class Game {
     }
 
     //internal helpers
+    private disableTrade() {
+        this.trade.active = false;
+        this.trade.tradePlayer = undefined;
+
+        console.log("trade end")
+    }
+
     private tradeProperty(addProperty: boolean, currentPlayer: Player, id: number) {
         const input = prompt("Enter the amount: ");
         const amount = Number(input);
 
         if (addProperty) {
+            if (currentPlayer.money < amount) {
+                console.log(`${this.currentPlayerColor} has not enough money to buy this property`);
+
+                this.disableTrade();
+                return;
+            }
+
             currentPlayer.money -= amount;
             this.trade.tradePlayer!.money += amount;
 
@@ -223,6 +237,13 @@ export class Game {
             currentPlayer.cards.properties.push(structuredClone(inGameProperty));
             this.removePropertyCardFromPlayer(this.trade.tradePlayer!, id);
         } else {
+            if (this.trade.tradePlayer!.money < amount) {
+                console.log(`${this.trade.tradePlayer!.color} has not enough money to buy this property`);
+
+                this.disableTrade();
+                return;
+            }
+
             currentPlayer.money += amount;
             this.trade.tradePlayer!.money -= amount;
 
@@ -235,11 +256,14 @@ export class Game {
         console.log(`opponent: ${this.trade.tradePlayer!.money}`);
         console.log(`me: ${currentPlayer.money}`);
 
+        console.log("opponent: ")
         this.trade.tradePlayer!.cards.properties.forEach(p => console.log(p))
+
+        console.log("me: ")
         currentPlayer.cards.properties.forEach(p => console.log(p))
 
-        this.trade.tradePlayer = undefined;
-        this.trade.active = false;
+        this.disableTrade();
+        console.log("trade was successfully")
 
         return;
     }
