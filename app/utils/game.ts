@@ -8,6 +8,9 @@ export class Game {
     currentPlayerColor: Color | undefined;
     started = false;
 
+    tradeActive = false;
+    tradePlayer: Player | undefined;
+
     cards = {
         lines: [...lines],
         companies: [...companies],
@@ -53,8 +56,12 @@ export class Game {
 
             console.log(`${color} is no longer the active player`);
         } else {
-            // TODO: implement payment to other player
-            console.log("Should pay the other player");
+            this.tradeActive = true;
+            this.tradePlayer = this.getPlayer(color)!;
+
+            console.log(this.tradePlayer);
+
+            console.log("trade own card with another player");
         }
     }
 
@@ -83,6 +90,32 @@ export class Game {
 
         //property is owned by other player
         if (!this.isCardAvailable(id) && !this.isCardOwnedByCurrentPlayer(id)) {
+            if (this.tradeActive) {
+                const input = prompt("Enter the amount: ");
+                const amount = Number(input);
+
+                const currentPlayer = this.getPlayer(this.currentPlayerColor)!;
+
+                currentPlayer.money -= amount;
+                this.tradePlayer!.money += amount;
+
+                const inGameProperty = this.getInGamePropertyById(this.tradePlayer!, id)!;
+
+                currentPlayer.cards.properties.push(structuredClone(inGameProperty));
+                this.removePropertyCardFromPlayer(this.tradePlayer!, id);
+
+                console.log(`opponent: ${this.tradePlayer!.money}`);
+                console.log(`me: ${currentPlayer.money}`);
+
+                this.tradePlayer!.cards.properties.forEach(p => console.log(p))
+                currentPlayer.cards.properties.forEach(p => console.log(p))
+
+                this.tradePlayer = undefined;
+                this.tradeActive = false;
+
+                return;
+            }
+
             const opponent = this.getPlayerByCard(id);
             if (!opponent) {
                 console.error("opponent does not have this card");
@@ -119,6 +152,13 @@ export class Game {
 
         //property is free
         if (!hasProperty) {
+            if (this.tradeActive) {
+                console.log("this property does not belong to anyone yet, you cant trade this")
+                this.tradeActive = false;
+                this.tradePlayer = undefined;
+                return;
+            }
+
             if (currentPlayer.money < property.purchasePrice) {
                 console.log("you don't have enough money to buy this property");
                 return;
@@ -131,7 +171,7 @@ export class Game {
             });
 
             currentPlayer.money -= property.purchasePrice;
-            this.removeCardFromGamePool(id);
+            this.removePropertyCardFromGamePool(id);
 
             console.log(`you have bought ${property.street}`);
             console.log(`me: ${currentPlayer.money}`);
@@ -140,6 +180,30 @@ export class Game {
         }
 
         //player owns property
+        if (this.tradeActive) {
+            const input = prompt("Enter the amount: ");
+            const amount = Number(input);
+
+            currentPlayer.money += amount;
+            this.tradePlayer!.money -= amount;
+
+            const inGameProperty = this.getInGamePropertyById(currentPlayer, id)!;
+
+            this.tradePlayer!.cards.properties.push(inGameProperty);
+            this.removePropertyCardFromPlayer(currentPlayer, id);
+
+            console.log(`opponent: ${this.tradePlayer!.money}`);
+            console.log(`me: ${currentPlayer.money}`);
+
+            this.tradePlayer!.cards.properties.forEach(p => console.log(p))
+            currentPlayer.cards.properties.forEach(p => console.log(p))
+
+            this.tradePlayer = undefined;
+            this.tradeActive = false;
+
+            return;
+        }
+
         const inGameProperty = this.getInGamePropertyById(currentPlayer, id)!;
 
         if (inGameProperty.hotelCount === 1) {
@@ -218,8 +282,13 @@ export class Game {
         return this.players.some((p) => p.color === color);
     }
 
-    private removeCardFromGamePool(id: number) {
+    private removePropertyCardFromGamePool(id: number) {
         const index = this.cards.properties.findIndex((p) => p.id === id);
         if (index !== -1) this.cards.properties.splice(index, 1);
+    }
+
+    private removePropertyCardFromPlayer(player: Player, id: number) {
+        const index = player.cards.properties.findIndex((p) => p.property.id === id);
+        if (index !== -1) player.cards.properties.splice(index, 1);
     }
 }
