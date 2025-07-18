@@ -1,339 +1,149 @@
-import {companies, lines, properties, getPropertyById} from "./cards";
-import type {Color, Player, InGameProperty} from "./types";
+export interface Game {
+  players: Player[];
+  availableHouses: number;
+  availableHotels: number;
 
-export class Game {
-    players: Player[] = [];
-    availableHotels = 8;
-    availableHouses = 32;
-    currentPlayerColor: Color | undefined;
-    started = false;
+  started: boolean;
+  currentPlayerColor: Color | undefined;
 
-    trade: { active: boolean, tradePlayer: Player | undefined } = {
-        active: false,
-        tradePlayer: undefined,
+  trade: { active: boolean; tradePlayer: Player | undefined };
+  cards: {
+    properties: Property[];
+    companies: Extra[];
+    lines: Extra[];
+  };
+}
+
+export function createGame(): Game {
+  return {
+    started: false,
+    currentPlayerColor: undefined,
+    players: [],
+    availableHouses: 32,
+    availableHotels: 8,
+    trade: {
+      active: false,
+      tradePlayer: undefined,
+    },
+    cards: {
+      lines: [...lines],
+      companies: [...companies],
+      properties: [...properties],
+    },
+  };
+}
+
+export function outOfJail(game: Game) {
+  if (!game.started) {
+    console.error("game not started");
+    return;
+  }
+
+  if (game.currentPlayerColor === undefined) {
+    console.error("no player selected");
+    return;
+  }
+
+  const currentPlayer = getPlayer(game, game.currentPlayerColor);
+  if (!currentPlayer) {
+    console.error("player search error");
+    return;
+  }
+
+  if (currentPlayer.hasEscapePrisonCard)
+    currentPlayer.hasEscapePrisonCard = false;
+  else currentPlayer.money -= 50;
+}
+
+export function disableTrade(game: Game) {
+  game.trade.active = false;
+  game.trade.tradePlayer = undefined;
+
+  console.log("trade end");
+}
+
+export function tradeProperty(
+  game: Game,
+  addProperty: boolean,
+  currentPlayer: Player,
+  id: number,
+) {
+  const input = prompt("Enter the amount: ");
+  const amount = Number(input);
+
+  if (addProperty) {
+    if (currentPlayer.money < amount) {
+      console.log(
+        `${currentPlayer.color} has not enough money to buy this property`,
+      );
+
+      disableTrade(game);
+      return;
     }
 
-    cards = {
-        lines: [...lines],
-        companies: [...companies],
-        properties: [...properties],
-    };
+    currentPlayer.money -= amount;
+    game.trade.tradePlayer!.money += amount;
 
-    constructor() {
+    const inGameProperty = getInGamePropertyById(game.trade.tradePlayer!, id)!;
+
+    currentPlayer.cards.properties.push(inGameProperty);
+    removePropertyCardFromPlayer(game.trade.tradePlayer!, id);
+  } else {
+    if (game.trade.tradePlayer!.money < amount) {
+      console.log(
+        `${game.trade.tradePlayer!.color} has not enough money to buy this property`,
+      );
+
+      disableTrade(game);
+      return;
     }
 
-    activatePlayerCard(color: Color) {
-        if (!this.started) {
-            if (this.checkIfPlayerAlreadyInGame(color)) {
-                console.error("player already inGame");
-                return;
-            }
+    currentPlayer.money += amount;
+    game.trade.tradePlayer!.money -= amount;
 
-            const player: Player = {
-                cards: {
-                    lines: [],
-                    companies: [],
-                    properties: [],
-                },
-                color: color,
-                hasEscapePrisonCard: false,
-                money: 1500,
-            };
+    const inGameProperty = getInGamePropertyById(currentPlayer, id)!;
 
-            this.players.push(player);
+    game.trade.tradePlayer!.cards.properties.push(inGameProperty);
+    removePropertyCardFromPlayer(currentPlayer, id);
+  }
 
-            console.log(`added player: ${color} successfully!`);
+  console.log(`opponent: ${game.trade.tradePlayer!.money}`);
+  console.log(`me: ${currentPlayer.money}`);
 
-            //todo wait a few seconds after each player and then start
-            if (this.players.length >= 2) this.started = true;
-            return;
-        }
+  console.log("opponent: ");
+  game.trade.tradePlayer!.cards.properties.forEach((p) => console.log(p));
 
-        if (this.currentPlayerColor === undefined) {
-            this.currentPlayerColor = color;
+  console.log("me: ");
+  currentPlayer.cards.properties.forEach((p) => console.log(p));
 
-            console.log(`${color} is now the active player`);
-        } else if (this.currentPlayerColor === color) {
-            this.currentPlayerColor = undefined;
+  disableTrade(game);
+  console.log("trade was successfully");
 
-            console.log(`${color} is no longer the active player`);
-        } else {
-            this.trade.active = true;
-            this.trade.tradePlayer = this.getPlayer(color)!;
+  return;
+}
 
-            console.log(this.trade.tradePlayer);
+export function getPlayerByCard(game: Game, id: number): Player | undefined {
+  return game.players.find((player) =>
+    player.cards.properties.some((property) => property.property.id === id),
+  );
+}
 
-            console.log("trade own card with another player");
-        }
-    }
+export function isCardAvailable(game: Game, id: number): boolean {
+  return (
+    game.cards.properties.some((p) => p.id === id) ||
+    game.cards.lines.some((c) => c.id === id) ||
+    game.cards.companies.some((c) => c.id === id)
+  );
+}
 
-    activatePropertyCard(id: number) {
-        if (!this.started) {
-            console.error("game not started");
-            return;
-        }
+export function isCardOwnedByCurrentPlayer(game: Game, id: number): boolean {
+  if (!game.started || game.currentPlayerColor === undefined) return false;
+  const player = getPlayer(game, game.currentPlayerColor);
+  if (!player) return false;
 
-        if (this.currentPlayerColor === undefined) {
-            console.error("no player selected");
-            return;
-        }
+  return player.cards.properties.some((p) => p.property.id === id);
+}
 
-        const property = getPropertyById(id);
-        if (!property) {
-            console.error("illegal id");
-            return;
-        }
-
-        const currentPlayer = this.getPlayer(this.currentPlayerColor);
-        if (!currentPlayer) {
-            console.error("player search error");
-            return;
-        }
-
-        //property is owned by other player
-        if (!this.isCardAvailable(id) && !this.isCardOwnedByCurrentPlayer(id)) {
-            if (this.trade.active) {
-                this.tradeProperty(true, currentPlayer, id);
-                return;
-            }
-
-            const opponent = this.getPlayerByCard(id);
-            if (!opponent) {
-                console.error("opponent does not have this card");
-                return;
-            }
-
-            const inGameProperty = this.getInGamePropertyById(opponent, id)!;
-
-            if (inGameProperty.hotelCount === 1) {
-                opponent.money += property.rent1Hotel;
-                currentPlayer.money -= property.rent1Hotel;
-            } else {
-                const rentMap = [
-                    property.rent,
-                    property.rent1House,
-                    property.rent2Houses,
-                    property.rent3Houses,
-                    property.rent4Houses,
-                ];
-
-                const houseCount = inGameProperty.houseCount;
-                const rent = rentMap[houseCount] || property.rent;
-
-                opponent.money += rent;
-                currentPlayer.money -= rent;
-            }
-
-            console.log(`opponent: ${opponent.money}`);
-            console.log(`me: ${currentPlayer.money}`);
-            return;
-        }
-
-        const hasProperty = this.hasPlayerPropertyCard(currentPlayer, id);
-
-        //property is free
-        if (!hasProperty) {
-            if (this.trade.active) {
-                console.log("this property does not belong to anyone yet, you cant trade this")
-
-                this.disableTrade();
-                return;
-            }
-
-            if (currentPlayer.money < property.purchasePrice) {
-                console.log("you don't have enough money to buy this property");
-                return;
-            }
-
-            currentPlayer.cards.properties.push({
-                property: property,
-                houseCount: 0,
-                hotelCount: 0,
-            });
-
-            currentPlayer.money -= property.purchasePrice;
-            this.removePropertyCardFromGamePool(id);
-
-            console.log(`you have bought ${property.street}`);
-            console.log(`me: ${currentPlayer.money}`);
-
-            return;
-        }
-
-        //player owns property
-        if (this.trade.active) {
-            this.tradeProperty(false, currentPlayer, id);
-            return;
-        }
-
-        const inGameProperty = this.getInGamePropertyById(currentPlayer, id)!;
-
-        if (inGameProperty.hotelCount === 1) {
-            console.log(`you have reached the maximum house/hotel capacity for ${property.street}`);
-        } else if (inGameProperty.houseCount + 1 <= 4 && currentPlayer.money >= property.housePrice) {
-            inGameProperty.houseCount++;
-            currentPlayer.money -= property.housePrice;
-            this.availableHouses--;
-
-            console.log(`you have successfully built a house on ${property.street}`);
-            console.log(`me: ${currentPlayer.money}`);
-        } else if (inGameProperty.houseCount === 4 && currentPlayer.money >= property.hotelPrice) {
-            inGameProperty.houseCount = 0;
-            inGameProperty.hotelCount = 1;
-
-            this.availableHotels--;
-            this.availableHouses += 4;
-
-            currentPlayer.money -= property.hotelPrice;
-
-            console.log(`you have successfully built a hotel on ${property.street}`);
-            console.log(`me: ${currentPlayer.money}`);
-        } else {
-            console.log(`you don't have enough money to buy a house on ${property.street}`);
-        }
-    }
-
-    outOfJail() {
-        if (!this.started) {
-            console.error("game not started");
-            return;
-        }
-
-        if (this.currentPlayerColor === undefined) {
-            console.error("no player selected");
-            return;
-        }
-
-        const currentPlayer = this.getPlayer(this.currentPlayerColor);
-        if (!currentPlayer) {
-            console.error("player search error");
-            return;
-        }
-
-        if (currentPlayer.hasEscapePrisonCard) currentPlayer.hasEscapePrisonCard = false;
-        else currentPlayer.money -= 50;
-    }
-
-    getPlayer(color: Color): Player | undefined {
-        return this.players.find((p) => p.color === color);
-    }
-
-    getActivePlayer(): Player | undefined {
-        return this.currentPlayerColor ? this.getPlayer(this.currentPlayerColor) : undefined;
-    }
-
-    getAvailableHouses(): number {
-        return this.availableHouses;
-    }
-
-    getAvailableHotels(): number {
-        return this.availableHotels;
-    }
-
-    //internal helpers
-    private disableTrade() {
-        this.trade.active = false;
-        this.trade.tradePlayer = undefined;
-
-        console.log("trade end")
-    }
-
-    private tradeProperty(addProperty: boolean, currentPlayer: Player, id: number) {
-        const input = prompt("Enter the amount: ");
-        const amount = Number(input);
-
-        if (addProperty) {
-            if (currentPlayer.money < amount) {
-                console.log(`${this.currentPlayerColor} has not enough money to buy this property`);
-
-                this.disableTrade();
-                return;
-            }
-
-            currentPlayer.money -= amount;
-            this.trade.tradePlayer!.money += amount;
-
-            const inGameProperty = this.getInGamePropertyById(this.trade.tradePlayer!, id)!;
-
-            currentPlayer.cards.properties.push(structuredClone(inGameProperty));
-            this.removePropertyCardFromPlayer(this.trade.tradePlayer!, id);
-        } else {
-            if (this.trade.tradePlayer!.money < amount) {
-                console.log(`${this.trade.tradePlayer!.color} has not enough money to buy this property`);
-
-                this.disableTrade();
-                return;
-            }
-
-            currentPlayer.money += amount;
-            this.trade.tradePlayer!.money -= amount;
-
-            const inGameProperty = this.getInGamePropertyById(currentPlayer, id)!;
-
-            this.trade.tradePlayer!.cards.properties.push(inGameProperty);
-            this.removePropertyCardFromPlayer(currentPlayer, id);
-        }
-
-        console.log(`opponent: ${this.trade.tradePlayer!.money}`);
-        console.log(`me: ${currentPlayer.money}`);
-
-        console.log("opponent: ")
-        this.trade.tradePlayer!.cards.properties.forEach(p => console.log(p))
-
-        console.log("me: ")
-        currentPlayer.cards.properties.forEach(p => console.log(p))
-
-        this.disableTrade();
-        console.log("trade was successfully")
-
-        return;
-    }
-
-    private addEscapePrisonCard(player: Player) {
-        player.hasEscapePrisonCard = true;
-    }
-
-    private getPlayerByCard(id: number): Player | undefined {
-        return this.players.find((player) =>
-            player.cards.properties.some((property) => property.property.id === id)
-        );
-    }
-
-    private getInGamePropertyById(player: Player, id: number): InGameProperty | undefined {
-        return player.cards.properties.find((property) => property.property.id === id);
-    }
-
-    private hasPlayerPropertyCard(player: Player, id: number): boolean {
-        return player.cards.properties.some((property) => property.property.id === id);
-    }
-
-    private isCardAvailable(id: number): boolean {
-        return (
-            this.cards.properties.some((p) => p.id === id) ||
-            this.cards.lines.some((c) => c.id === id) ||
-            this.cards.companies.some((c) => c.id === id)
-        );
-    }
-
-    private isCardOwnedByCurrentPlayer(id: number): boolean {
-        if (!this.started || this.currentPlayerColor === undefined) return false;
-        const player = this.getPlayer(this.currentPlayerColor);
-        if (!player) return false;
-
-        return player.cards.properties.some((p) => p.property.id === id);
-    }
-
-    private checkIfPlayerAlreadyInGame(color: Color): boolean {
-        return this.players.some((p) => p.color === color);
-    }
-
-    private removePropertyCardFromGamePool(id: number) {
-        const index = this.cards.properties.findIndex((p) => p.id === id);
-        if (index !== -1) this.cards.properties.splice(index, 1);
-    }
-
-    private removePropertyCardFromPlayer(player: Player, id: number) {
-        const index = player.cards.properties.findIndex((p) => p.property.id === id);
-        if (index !== -1) player.cards.properties.splice(index, 1);
-    }
+export function checkIfPlayerAlreadyInGame(game: Game, color: Color): boolean {
+  return game.players.some((p) => p.color === color);
 }

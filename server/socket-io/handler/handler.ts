@@ -1,4 +1,3 @@
-import {Namespace, Socket} from "socket.io";
+import { Namespace, Socket } from "socket.io";
 
-export function handleGameEvents(socket: Socket, gameIO: Namespace) {
-}
+export function handleGameEvents(socket: Socket, gameIO: Namespace) {}
