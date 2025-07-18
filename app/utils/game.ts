@@ -193,6 +193,27 @@ export class Game {
         }
     }
 
+    outOfJail() {
+        if (!this.started) {
+            console.error("game not started");
+            return;
+        }
+
+        if (this.currentPlayerColor === undefined) {
+            console.error("no player selected");
+            return;
+        }
+
+        const currentPlayer = this.getPlayer(this.currentPlayerColor);
+        if (!currentPlayer) {
+            console.error("player search error");
+            return;
+        }
+
+        if (currentPlayer.hasEscapePrisonCard) currentPlayer.hasEscapePrisonCard = false;
+        else currentPlayer.money -= 50;
+    }
+
     getPlayer(color: Color): Player | undefined {
         return this.players.find((p) => p.color === color);
     }
@@ -266,6 +287,10 @@ export class Game {
         console.log("trade was successfully")
 
         return;
+    }
+
+    private addEscapePrisonCard(player: Player) {
+        player.hasEscapePrisonCard = true;
     }
 
     private getPlayerByCard(id: number): Player | undefined {

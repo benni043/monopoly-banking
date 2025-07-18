@@ -17,6 +17,10 @@ socket.on("game:propertyCard", (id: number) => {
   game.activatePropertyCard(id);
 });
 
+socket.on("game:jailCard", () => {
+  game.outOfJail();
+})
+
 </script>
 
 <template>
