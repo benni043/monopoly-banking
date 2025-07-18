@@ -20,19 +20,6 @@ export interface Extra {
     name: string;
 }
 
-export interface Game {
-    started: boolean;
-    currentPlayerColor: Color | undefined;
-    players: Player[];
-    cards: {
-        properties: Property[];
-        companies: Extra[];
-        lines: Extra[];
-    };
-    availableHouses: number;
-    availableHotels: number;
-}
-
 export interface Player {
     color: Color;
     cards: {

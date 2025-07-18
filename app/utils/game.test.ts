@@ -39,7 +39,6 @@ describe("Gameplay", () => {
 
     game.activatePlayerCard("blue");
     game.activatePlayerCard("red");
-    game.activatePlayerCard("yellow");
   });
 
   it("can activate and deactivate player", () => {
