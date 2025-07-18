@@ -4,11 +4,11 @@ const { game } = useGame();
 
 <template>
   <div>
-    <h1 class="text-2xl font-bold">monopoly works</h1>
+    <h1 class="text-2xl font-bold">DKT works</h1>
 
     <div class="flex flex-col gap-2">
       <div>
-        <h2 class="text-xl">PLayers</h2>
+        <h2 class="text-xl">Players</h2>
         <div class="flex gap-2">
           <div v-for="player in game.players">
             {{ player.color }}
@@ -17,7 +17,7 @@ const { game } = useGame();
       </div>
 
       <div>
-        <h2 class="text-xl">Active PLayer</h2>
+        <h2 class="text-xl">Active Player</h2>
         {{ getActivePlayer(game)?.color }}
       </div>
     </div>

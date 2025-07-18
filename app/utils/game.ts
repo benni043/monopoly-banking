@@ -86,7 +86,7 @@ export function tradeProperty(
 
     const inGameProperty = getInGamePropertyById(game.trade.tradePlayer!, id)!;
 
-    currentPlayer.cards.properties.push(structuredClone(inGameProperty));
+    currentPlayer.cards.properties.push(inGameProperty);
     removePropertyCardFromPlayer(game.trade.tradePlayer!, id);
   } else {
     if (game.trade.tradePlayer!.money < amount) {
