@@ -16,6 +16,8 @@
     "socket.io-client": "^4.8.1",
     "vitest": "^3.2.4",
     "vue": "^3.5.17",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "@tailwindcss/vite": "^4.1.11",
+    "tailwindcss": "^4.1.11"
   }
 }
