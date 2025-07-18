@@ -3,8 +3,8 @@ import type {Color, Player, InGameProperty} from "./types";
 
 export class Game {
     players: Player[] = [];
-    availableHotels = 10;
-    availableHouses = 25;
+    availableHotels = 8;
+    availableHouses = 32;
     currentPlayerColor: Color | undefined;
     started = false;
 
@@ -36,6 +36,7 @@ export class Game {
             };
 
             this.players.push(player);
+
             console.log(`added player: ${color} successfully!`);
 
             //todo wait a few seconds after each player and then start
@@ -45,9 +46,11 @@ export class Game {
 
         if (this.currentPlayerColor === undefined) {
             this.currentPlayerColor = color;
+
             console.log(`${color} is now the active player`);
         } else if (this.currentPlayerColor === color) {
             this.currentPlayerColor = undefined;
+
             console.log(`${color} is no longer the active player`);
         } else {
             // TODO: implement payment to other player
@@ -162,7 +165,6 @@ export class Game {
         } else {
             console.log(`you don't have enough money to buy a house on ${property.street}`);
         }
-
     }
 
     getPlayer(color: Color): Player | undefined {
