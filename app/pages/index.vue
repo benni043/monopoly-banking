@@ -1,24 +1,5 @@
 <script setup lang="ts">
-import { io } from "socket.io-client";
-import type { Color } from "~/utils/types";
-
-const socket = io("/", {
-    path: "/api/socket.io",
-});
-
-const game = reactive(new Game());
-
-socket.on("game:playerCard", (color: Color) => {
-    game.activatePlayerCard(color);
-});
-
-socket.on("game:propertyCard", (id: number) => {
-    game.activatePropertyCard(id);
-});
-
-socket.on("game:jailCard", () => {
-    game.outOfJail();
-});
+const { game } = useGame();
 </script>
 
 <template>
@@ -37,7 +18,7 @@ socket.on("game:jailCard", () => {
 
             <div>
                 <h2 class="text-xl">Active PLayer</h2>
-                {{ game.getActivePlayer()?.color }}
+                {{ getActivePlayer(game)?.color }}
             </div>
         </div>
     </div>

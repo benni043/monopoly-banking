@@ -1,16 +1,16 @@
-import type {H3Event} from "h3";
-import {initSocket, io} from "~~/server/socket-io";
+import type { H3Event } from "h3";
+import { initSocket, io } from "~~/server/socket-io";
 
 export default defineEventHandler(async (event: H3Event) => {
-    initSocket(event);
+  initSocket(event);
 
-    const body = await readBody(event);
+  const body = await readBody(event);
 
-    const {color} = body;
+  const { color } = body;
 
-    io.of("/").emit("game:playerCard", color);
+  io.of("/").emit("game:playerCard", color);
 
-    return {
-        statusCode: 200,
-    };
+  return {
+    statusCode: 200,
+  };
 });
