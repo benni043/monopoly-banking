@@ -348,6 +348,10 @@ export const properties: Property[] = [
     },
 ];
 
+export function getPropertyById(id: number): Property | undefined {
+  return properties.find((property: Property) => property.id === id);
+}
+
 export const lines: Extra[] = [
     {
         id: 18,
