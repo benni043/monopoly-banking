@@ -222,14 +222,6 @@ export class Game {
         return this.currentPlayerColor ? this.getPlayer(this.currentPlayerColor) : undefined;
     }
 
-    getAvailableHouses(): number {
-        return this.availableHouses;
-    }
-
-    getAvailableHotels(): number {
-        return this.availableHotels;
-    }
-
     //internal helpers
     private disableTrade() {
         this.trade.active = false;

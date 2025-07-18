@@ -23,8 +23,8 @@ describe("Game Setup", () => {
 
   it("game has correct defaults", () => {
     expect(game.getActivePlayer()).toBeUndefined();
-    expect(game.getAvailableHotels()).toBe(10);
-    expect(game.getAvailableHouses()).toBe(25);
+    expect(game.availableHotels).toBe(8);
+    expect(game.availableHouses).toBe(32);
 
     game.activatePlayerCard("blue");
     expect(game.getPlayer("blue")?.money).toBe(1500);
@@ -83,7 +83,7 @@ describe("Gameplay", () => {
     expect(game.getActivePlayer()?.cards.properties[0]?.hotelCount).toBe(0);
     expect(game.getActivePlayer()?.cards.properties[0]?.houseCount).toBe(2);
 
-    expect(game.getAvailableHouses()).toBe(23);
+    expect(game.availableHouses).toBe(30);
   });
 
   it("can buy hotel", () => {
@@ -107,8 +107,8 @@ describe("Gameplay", () => {
     expect(game.getActivePlayer()?.cards.properties[0]?.hotelCount).toBe(1);
     expect(game.getActivePlayer()?.cards.properties[0]?.houseCount).toBe(0);
 
-    expect(game.getAvailableHouses()).toBe(25);
-    expect(game.getAvailableHotels()).toBe(9);
+    expect(game.availableHouses).toBe(32);
+    expect(game.availableHotels).toBe(7);
   });
 
   it("can not over buy hotel", () => {
@@ -134,8 +134,8 @@ describe("Gameplay", () => {
     expect(game.getActivePlayer()?.cards.properties[0]?.hotelCount).toBe(1);
     expect(game.getActivePlayer()?.cards.properties[0]?.houseCount).toBe(0);
 
-    expect(game.getAvailableHouses()).toBe(25);
-    expect(game.getAvailableHotels()).toBe(9);
+    expect(game.availableHouses).toBe(32);
+    expect(game.availableHotels).toBe(7);
   });
 
   it("can not buy if to little money", () => {
