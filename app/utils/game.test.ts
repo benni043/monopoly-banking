@@ -10,10 +10,13 @@ describe("Game Setup", () => {
 
     activatePlayerCard(game, "blue");
     activatePlayerCard(game, "red");
+    activatePlayerCard(game, "green");
 
     expect(getPlayer(game, "blue")).toBeTruthy();
     expect(getPlayer(game, "red")).toBeTruthy();
-    expect(getPlayer(game, "green")).toBeUndefined();
+    expect(getPlayer(game, "green")).toBeTruthy();
+
+    expect(getPlayer(game, "yellow")).toBeUndefined();
   });
 
   it("game has correct defaults", () => {
@@ -31,11 +34,81 @@ describe("Game Setup", () => {
 describe("Gameplay", () => {
   let game: Game;
 
+  function buyProperty(game: Game, propertyId: number) {
+    const money = getActivePlayer(game)!.money;
+
+    activatePropertyCard(game, propertyId); // property
+
+    let toBuy = getPropertyById(propertyId)!;
+    let property = getActivePlayer(game)?.cards.properties.find(
+      (card) => card.property.id === propertyId,
+    );
+
+    expect(getActivePlayer(game)?.money).toBe(money - toBuy.purchasePrice);
+    expect(property?.property).toBe(toBuy);
+    expect(property?.hotelCount).toBe(0);
+    expect(property?.houseCount).toBe(0);
+  }
+
+  function buyHouse(game: Game, propertyId: number) {
+    let property = getInGamePropertyById(getActivePlayer(game)!, propertyId);
+
+    let houses = property?.houseCount || 0;
+    const money = getActivePlayer(game)!.money;
+    const availableHouses = game.availableHouses;
+
+    activatePropertyCard(game, propertyId);
+
+    let toBuy = getPropertyById(propertyId)!;
+    expect(getActivePlayer(game)?.money).toBe(money - toBuy.housePrice);
+
+    expect(property?.property).toBe(toBuy);
+    expect(property?.hotelCount).toBe(0);
+    expect(property?.houseCount).toBe(houses + 1);
+
+    expect(game.availableHouses).toBe(availableHouses - 1);
+  }
+
+  function buyFullHouse(game: Game, propertyId: number) {
+    buyProperty(game, propertyId);
+    buyHouse(game, propertyId);
+  }
+
+  function buyHotel(game: Game, propertyId: number) {
+    let property = getInGamePropertyById(getActivePlayer(game)!, propertyId);
+
+    const money = getActivePlayer(game)!.money;
+    const availableHouses = game.availableHouses;
+    const availableHotels = game.availableHotels;
+
+    activatePropertyCard(game, propertyId);
+
+    let toBuy = getPropertyById(propertyId)!;
+    expect(getActivePlayer(game)?.money).toBe(money - toBuy.hotelPrice);
+
+    expect(property?.property).toBe(toBuy);
+    expect(property?.hotelCount).toBe(1);
+    expect(property?.houseCount).toBe(0);
+
+    expect(game.availableHouses).toBe(availableHouses + 4);
+    expect(game.availableHotels).toBe(availableHotels - 1);
+  }
+
+  function buyFullHotel(game: Game, propertyId: number) {
+    buyProperty(game, propertyId);
+    buyHouse(game, propertyId);
+    buyHouse(game, propertyId);
+    buyHouse(game, propertyId);
+    buyHouse(game, propertyId);
+    buyHotel(game, propertyId);
+  }
+
   beforeEach(() => {
     game = createGame();
 
     activatePlayerCard(game, "blue");
     activatePlayerCard(game, "red");
+    activatePlayerCard(game, "yellow");
   });
 
   it("can activate and deactivate player", () => {
@@ -53,71 +126,36 @@ describe("Gameplay", () => {
 
   it("can buy property", () => {
     activatePlayerCard(game, "blue");
-    activatePropertyCard(game, 2); // property
+    buyProperty(game, 2);
+    buyProperty(game, 5);
 
-    let toBuy = getPropertyById(2)!;
+    activatePlayerCard(game, "blue");
+    activatePlayerCard(game, "red");
 
-    expect(getActivePlayer(game)?.money).toBe(1500 - toBuy.purchasePrice);
-    expect(getActivePlayer(game)?.cards.properties[0]?.property).toBe(toBuy);
-    expect(getActivePlayer(game)?.cards.properties[0]?.hotelCount).toBe(0);
-    expect(getActivePlayer(game)?.cards.properties[0]?.houseCount).toBe(0);
+    buyProperty(game, 6);
+  });
+
+  it("ignores property if no player is active", () => {
+    activatePropertyCard(game, 2);
+
+    activatePlayerCard(game, "blue");
+    buyProperty(game, 2);
   });
 
   it("can buy house", () => {
     activatePlayerCard(game, "blue");
-    activatePropertyCard(game, 2); // property
-
-    activatePropertyCard(game, 2); // houses
-    activatePropertyCard(game, 2);
-
-    let toBuy = getPropertyById(2)!;
-
-    expect(getActivePlayer(game)?.money).toBe(
-      1500 - toBuy.purchasePrice - toBuy.housePrice * 2,
-    );
-
-    expect(getActivePlayer(game)?.cards.properties[0]?.property).toBe(toBuy);
-    expect(getActivePlayer(game)?.cards.properties[0]?.hotelCount).toBe(0);
-    expect(getActivePlayer(game)?.cards.properties[0]?.houseCount).toBe(2);
-
-    expect(game.availableHouses).toBe(30);
+    buyFullHouse(game, 2);
+    buyHouse(game, 2);
   });
 
   it("can buy hotel", () => {
     activatePlayerCard(game, "blue");
-    activatePropertyCard(game, 2); // property
-
-    activatePropertyCard(game, 2); // houses
-    activatePropertyCard(game, 2);
-    activatePropertyCard(game, 2);
-    activatePropertyCard(game, 2);
-
-    activatePropertyCard(game, 2); // hotel
-
-    let toBuy = getPropertyById(2)!;
-
-    expect(getActivePlayer(game)?.money).toBe(
-      1500 - toBuy.purchasePrice - toBuy.housePrice * 4 - toBuy.hotelPrice,
-    );
-
-    expect(getActivePlayer(game)?.cards.properties[0]?.property).toBe(toBuy);
-    expect(getActivePlayer(game)?.cards.properties[0]?.hotelCount).toBe(1);
-    expect(getActivePlayer(game)?.cards.properties[0]?.houseCount).toBe(0);
-
-    expect(game.availableHouses).toBe(32);
-    expect(game.availableHotels).toBe(7);
+    buyFullHotel(game, 2);
   });
 
   it("can not over buy hotel", () => {
     activatePlayerCard(game, "blue");
-    activatePropertyCard(game, 2); // property
-
-    activatePropertyCard(game, 2); // houses
-    activatePropertyCard(game, 2);
-    activatePropertyCard(game, 2);
-    activatePropertyCard(game, 2);
-
-    activatePropertyCard(game, 2); // hotel
+    buyFullHotel(game, 2);
 
     activatePropertyCard(game, 2); // to be ignored
 
@@ -147,7 +185,8 @@ describe("Gameplay", () => {
 
   it("can pay rent", () => {
     activatePlayerCard(game, "blue");
-    activatePropertyCard(game, 2);
+    buyProperty(game, 2);
+
     getActivePlayer(game)!.money = 1500;
     activatePlayerCard(game, "blue");
 
@@ -162,10 +201,8 @@ describe("Gameplay", () => {
 
   it("can pay rent for house", () => {
     activatePlayerCard(game, "blue");
-    activatePropertyCard(game, 2);
-
-    activatePropertyCard(game, 2);
-    activatePropertyCard(game, 2);
+    buyFullHouse(game, 2);
+    buyHouse(game, 2);
 
     getActivePlayer(game)!.money = 1500;
     activatePlayerCard(game, "blue");
@@ -181,14 +218,7 @@ describe("Gameplay", () => {
 
   it("can pay rent for hotel", () => {
     activatePlayerCard(game, "blue");
-    activatePropertyCard(game, 2);
-
-    activatePropertyCard(game, 2);
-    activatePropertyCard(game, 2);
-    activatePropertyCard(game, 2);
-    activatePropertyCard(game, 2);
-
-    activatePropertyCard(game, 2);
+    buyFullHotel(game, 2);
 
     getActivePlayer(game)!.money = 1500;
     activatePlayerCard(game, "blue");
@@ -200,5 +230,80 @@ describe("Gameplay", () => {
 
     expect(getPlayer(game, "red")?.money).toBe(1500 - property.rent1Hotel);
     expect(getPlayer(game, "blue")?.money).toBe(1500 + property.rent1Hotel);
+  });
+
+  it("can trade property", () => {
+    {
+      activatePlayerCard(game, "blue");
+      buyFullHouse(game, 2);
+      buyFullHouse(game, 5);
+
+      getActivePlayer(game)!.money = 1500;
+      {
+        activatePlayerCard(game, "red");
+
+        activatePropertyCard(game, 2);
+        setTradeAmount(game, 100);
+
+        activatePlayerCard(game, "red");
+      }
+      {
+        activatePlayerCard(game, "yellow");
+
+        activatePropertyCard(game, 5);
+        setTradeAmount(game, 200);
+
+        activatePlayerCard(game, "yellow");
+      }
+    }
+
+    let property2 = getPropertyById(2)!;
+    let property5 = getPropertyById(5)!;
+
+    expect(getPlayer(game, "blue")?.money).toBe(1500 + 100 + 200);
+    expect(getPlayer(game, "red")?.money).toBe(1500 - 100);
+    expect(getPlayer(game, "yellow")?.money).toBe(1500 - 200);
+
+    expect(getPlayer(game, "blue")?.cards.properties.length).toBe(0);
+    expect(getPlayer(game, "red")?.cards.properties.length).toBe(1);
+    expect(getInGamePropertyById(getPlayer(game, "red")!, 2)).toBe(property2);
+    expect(getPlayer(game, "yellow")?.cards.properties.length).toBe(1);
+    expect(getInGamePropertyById(getPlayer(game, "yellow")!, 5)).toBe(
+      property5,
+    );
+  });
+
+  it("can cancel trade", () => {
+    {
+      activatePlayerCard(game, "blue");
+      buyFullHouse(game, 2);
+      buyFullHouse(game, 5);
+
+      getActivePlayer(game)!.money = 1500;
+      activatePlayerCard(game, "red");
+
+      activatePlayerCard(game, "blue");
+    }
+
+    activatePlayerCard(game, "blue");
+    activatePlayerCard(game, "yellow");
+
+    activatePropertyCard(game, 5);
+    setTradeAmount(game, 200);
+
+    let property2 = getPropertyById(2)!;
+    let property5 = getPropertyById(5)!;
+
+    expect(getPlayer(game, "blue")?.money).toBe(1500 + 200);
+    expect(getPlayer(game, "red")?.money).toBe(1500);
+    expect(getPlayer(game, "yellow")?.money).toBe(1500 - 200);
+
+    expect(getPlayer(game, "blue")?.cards.properties.length).toBe(1);
+    expect(getInGamePropertyById(getPlayer(game, "blue")!, 2)).toBe(property2);
+    expect(getPlayer(game, "red")?.cards.properties.length).toBe(0);
+    expect(getPlayer(game, "yellow")?.cards.properties.length).toBe(1);
+    expect(getInGamePropertyById(getPlayer(game, "yellow")!, 5)).toBe(
+      property5,
+    );
   });
 });
