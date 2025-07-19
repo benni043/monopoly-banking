@@ -33,6 +33,10 @@ export function createGame(): Game {
     };
 }
 
+export function setTradeAmount(game: Game, amount: number) {
+  throw new Error("Function not implemented.");
+}
+
 export function outOfJail(game: Game) {
     if (!game.started) {
         console.error("game not started");
