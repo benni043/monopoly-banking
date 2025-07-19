@@ -2,11 +2,11 @@ import type { H3Event } from "h3";
 import { initSocket, io } from "~~/server/socket-io";
 
 export default defineEventHandler(async (event: H3Event) => {
-    initSocket(event);
+  initSocket(event);
 
-    io.of("/").emit("game:finishedOneRound");
+  io.of("/").emit("game:finishedOneRound");
 
-    return {
-        statusCode: 200,
-    };
+  return {
+    statusCode: 200,
+  };
 });

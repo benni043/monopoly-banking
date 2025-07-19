@@ -28,12 +28,7 @@ export function getActivePlayer(game: Game): Player | undefined {
 }
 
 export function activatePlayerCard(game: Game, color: Color) {
-  if (!game.started) {
-    if (checkIfPlayerAlreadyInGame(game, color)) {
-      console.error("player already inGame");
-      return;
-    }
-
+  if (!checkIfPlayerAlreadyInGame(game, color)) {
     const player: Player = {
       cards: {
         lines: [],
@@ -49,8 +44,6 @@ export function activatePlayerCard(game: Game, color: Color) {
 
     console.log(`added player: ${color} successfully!`);
 
-    //todo wait a few seconds after each player and then start
-    if (game.players.length >= 2) game.started = true;
     return;
   }
 
@@ -65,8 +58,6 @@ export function activatePlayerCard(game: Game, color: Color) {
   } else {
     game.trade.active = true;
     game.trade.tradePlayer = getPlayer(game, color)!;
-
-    console.log(game.trade.tradePlayer);
 
     console.log("trade own card with another player");
   }

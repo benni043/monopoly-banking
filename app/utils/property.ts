@@ -21,11 +21,6 @@ export interface Extra {
 }
 
 export function activatePropertyCard(game: Game, id: number) {
-  if (!game.started) {
-    console.error("game not started");
-    return;
-  }
-
   if (game.currentPlayerColor === undefined) {
     console.error("no player selected");
     return;
