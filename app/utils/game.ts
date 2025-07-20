@@ -96,7 +96,6 @@ export function payAndTrade(game: Game, amount: number) {
   }
 
   let firstResult = null;
-  let isConsistent = true;
 
   for (let tradeCardId of game.trade.tradeCardIds) {
     const result = hasPlayerPropertyCard(currentPlayer, tradeCardId);
@@ -104,8 +103,6 @@ export function payAndTrade(game: Game, amount: number) {
     if (firstResult === null) {
       firstResult = result;
     } else if (result !== firstResult) {
-      isConsistent = false;
-
       console.log(
         `only cards from ${game.currentPlayerColor} or ${game.trade.tradePlayer!.color} are allowed`,
       );

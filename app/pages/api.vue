@@ -23,6 +23,15 @@ function onJailCard() {
     body: JSON.stringify({}),
   });
 }
+
+let payAmount = ref(0);
+
+function onPay(amount: number) {
+  $fetch("/api/pay/", {
+    method: "POST",
+    body: JSON.stringify({ amount }),
+  });
+}
 </script>
 
 <template>
@@ -52,6 +61,15 @@ function onJailCard() {
           send Property card
         </button>
         <input class="border px-2 rounded" v-model="id" type="number" />
+      </div>
+      <div class="flex gap-2">
+        <button
+          class="cursor-pointer border px-2 rounded"
+          @click="onPay(payAmount)"
+        >
+          pay
+        </button>
+        <input class="border px-2 rounded" v-model="payAmount" type="number" />
       </div>
       <div>
         <button class="cursor-pointer border px-2 rounded" @click="onJailCard">

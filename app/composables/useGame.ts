@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { finishedOneRound } from "~/utils/game";
+import { finishedOneRound, payAndTrade } from "~/utils/game";
 
 let gameRef: Ref<Game> | undefined;
 let socket: ReturnType<typeof io> | undefined;
@@ -28,6 +28,10 @@ export function useGame() {
 
     socket.on("game:finishedOneRound", () => {
       finishedOneRound(gameRef!.value);
+    });
+
+    socket.on("game:pay", (amount: number) => {
+      payAndTrade(gameRef!.value, amount);
     });
   }
 
