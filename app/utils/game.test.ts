@@ -428,7 +428,9 @@ describe("Gameplay", () => {
     expect(getPlayer(game, "yellow")?.money).toBe(1500 - 200);
 
     expect(getPlayer(game, "blue")?.cards.properties.length).toBe(1);
-    expect(getInGamePropertyById(getPlayer(game, "blue")!, 2)?.property).toBe(property2);
+    expect(getInGamePropertyById(getPlayer(game, "blue")!, 2)?.property).toBe(
+      property2,
+    );
     expect(getPlayer(game, "red")?.cards.properties.length).toBe(0);
     expect(getPlayer(game, "yellow")?.cards.properties.length).toBe(1);
     expect(getInGamePropertyById(getPlayer(game, "yellow")!, 5)?.property).toBe(

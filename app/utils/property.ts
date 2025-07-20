@@ -1,3 +1,5 @@
+import { sellCardToBank } from "~/utils/bank";
+
 export interface Property {
   id: number;
   color: string;
@@ -40,6 +42,14 @@ export function activatePropertyCard(game: Game, id: number) {
   const currentPlayer = getPlayer(game, game.currentPlayerColor);
   if (!currentPlayer) {
     console.error("player search error");
+    return;
+  }
+
+  if (game.bankTrade.active) {
+    sellCardToBank(id, currentPlayer);
+    currentPlayer.cards.properties.forEach((property) => {
+      console.log(property);
+    });
     return;
   }
 

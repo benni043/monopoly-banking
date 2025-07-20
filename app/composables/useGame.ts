@@ -1,5 +1,6 @@
 import { io } from "socket.io-client";
 import { finishedOneRound, payAndTrade } from "~/utils/game";
+import { activateBankCard } from "~/utils/bank";
 
 let gameRef: Ref<Game> | undefined;
 let socket: ReturnType<typeof io> | undefined;
@@ -32,6 +33,10 @@ export function useGame() {
 
     socket.on("game:pay", (amount: number) => {
       payAndTrade(gameRef!.value, amount);
+    });
+
+    socket.on("game:bankTrade", () => {
+      activateBankCard(gameRef!.value);
     });
   }
 

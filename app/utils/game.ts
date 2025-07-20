@@ -7,12 +7,17 @@ export interface Game {
 
   currentPlayerColor: Color | undefined;
 
+  bankTrade: {
+    active: boolean;
+  };
+
   trade: {
     active: boolean;
     tradePlayer: Player | undefined;
     tradeAmount: number | undefined;
     tradeCardIds: number[];
   };
+
   cards: {
     properties: Property[];
     companies: Extra[];
@@ -26,6 +31,9 @@ export function createGame(): Game {
     players: [],
     availableHouses: 32,
     availableHotels: 8,
+    bankTrade: {
+      active: false,
+    },
     trade: {
       active: false,
       tradePlayer: undefined,

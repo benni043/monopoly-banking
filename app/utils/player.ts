@@ -1,4 +1,5 @@
 import { disableTrade } from "~/utils/game";
+import { disableBankTrade } from "~/utils/bank";
 
 export interface Player {
   color: Color;
@@ -55,7 +56,9 @@ export function activatePlayerCard(game: Game, color: Color) {
     console.log(`${color} is now the active player`);
   } else if (game.currentPlayerColor === color) {
     game.currentPlayerColor = undefined;
+
     disableTrade(game);
+    disableBankTrade(game);
 
     console.log(`${color} is no longer the active player`);
   } else {
