@@ -40,6 +40,9 @@ export function activatePropertyCard(game: Game, id: number) {
 
   if (game.trade.active) {
     game.trade.tradeCardIds.push(id);
+
+    console.log(`${id} was added to trade list`);
+
     return;
   }
 
