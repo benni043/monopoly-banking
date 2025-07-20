@@ -24,6 +24,13 @@ function onJailCard() {
   });
 }
 
+function onBankCard() {
+  $fetch("/api/bankCard/", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
+
 let payAmount = ref(0);
 
 function onPay(amount: number) {
@@ -70,6 +77,11 @@ function onPay(amount: number) {
           pay
         </button>
         <input class="border px-2 rounded" v-model="payAmount" type="number" />
+      </div>
+      <div>
+        <button class="cursor-pointer border px-2 rounded" @click="onBankCard">
+          send Bank card
+        </button>
       </div>
       <div>
         <button class="cursor-pointer border px-2 rounded" @click="onJailCard">
