@@ -20,6 +20,11 @@ export interface Extra {
   name: string;
 }
 
+export interface Special {
+  id: number;
+  name: string;
+}
+
 export function activatePropertyCard(game: Game, id: number) {
   if (game.currentPlayerColor === undefined) {
     console.error("no player selected");

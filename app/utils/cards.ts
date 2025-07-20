@@ -1,3 +1,5 @@
+import type { Special } from "~/utils/property";
+
 export const properties: Property[] = [
   {
     id: 39,
@@ -388,5 +390,24 @@ export const companies: Extra[] = [
     id: 4,
     type: "Betrieb",
     name: "Elektr. Kraftwerk",
+  },
+];
+
+export const specialCards: Special[] = [
+  {
+    id: 41,
+    name: "Bank",
+  },
+  {
+    id: 42,
+    name: "Gehe aus dem Gefängnis",
+  },
+  {
+    id: 43,
+    name: "Gehe über Los",
+  },
+  {
+    id: 44,
+    name: "Zahle 10% Vermögensabgabe",
   },
 ];
