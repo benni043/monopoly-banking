@@ -1,3 +1,5 @@
+import { hasPlayerPropertyCard } from "~/utils/player";
+
 export interface Game {
   players: Player[];
   availableHouses: number;
@@ -9,6 +11,7 @@ export interface Game {
     active: boolean;
     tradePlayer: Player | undefined;
     tradeAmount: number | undefined;
+    tradeCardIds: number[];
   };
   cards: {
     properties: Property[];
@@ -27,6 +30,7 @@ export function createGame(): Game {
       active: false,
       tradePlayer: undefined,
       tradeAmount: undefined,
+      tradeCardIds: [],
     },
     cards: {
       lines: [...lines],
@@ -34,10 +38,6 @@ export function createGame(): Game {
       properties: [...properties],
     },
   };
-}
-
-export function setTradeAmount(game: Game, amount: number) {
-  game.trade.tradeAmount = amount;
 }
 
 export function outOfJail(game: Game) {
@@ -81,31 +81,55 @@ export function disableTrade(game: Game) {
   game.trade.active = false;
   game.trade.tradePlayer = undefined;
   game.trade.tradeAmount = undefined;
+  game.trade.tradeCardIds = [];
 
   console.log("trade end");
 }
 
-function isRunningInNode(): boolean {
-  return (
-    typeof process !== "undefined" &&
-    process.versions != null &&
-    process.versions.node != null
-  );
+export function payAndTrade(game: Game, amount: number) {
+  game.trade.tradeAmount = amount;
+
+  const currentPlayer = getPlayer(game, game.currentPlayerColor!);
+  if (!currentPlayer) {
+    console.error("player search error");
+    return;
+  }
+
+  let firstResult = null;
+  let isConsistent = true;
+
+  for (let tradeCardId of game.trade.tradeCardIds) {
+    const result = hasPlayerPropertyCard(currentPlayer, tradeCardId);
+
+    if (firstResult === null) {
+      firstResult = result;
+    } else if (result !== firstResult) {
+      isConsistent = false;
+
+      console.log(
+        `only cards from ${game.currentPlayerColor} or ${game.trade.tradePlayer!.color} are allowed`,
+      );
+      return;
+    }
+  }
+
+  let success = payProperty(game, !firstResult!, currentPlayer);
+  if (!success) {
+    disableTrade(game);
+    return;
+  }
+
+  tradeProperty(game, !firstResult!, currentPlayer, game.trade.tradeCardIds);
+
+  disableTrade(game);
+  console.log("trade was successfully");
 }
 
-export function tradeProperty(
+export function payProperty(
   game: Game,
   addProperty: boolean,
   currentPlayer: Player,
-  id: number,
-) {
-  if (!isRunningInNode()) {
-    const input = prompt("Enter the amount: ");
-    const amount = Number(input);
-
-    setTradeAmount(game, amount);
-  }
-
+): boolean {
   if (addProperty) {
     if (currentPlayer.money < game.trade.tradeAmount!) {
       console.log(
@@ -113,16 +137,11 @@ export function tradeProperty(
       );
 
       disableTrade(game);
-      return;
+      return false;
     }
 
     currentPlayer.money -= game.trade.tradeAmount!;
     game.trade.tradePlayer!.money += game.trade.tradeAmount!;
-
-    const inGameProperty = getInGamePropertyById(game.trade.tradePlayer!, id)!;
-
-    currentPlayer.cards.properties.push(inGameProperty);
-    removePropertyCardFromPlayer(game.trade.tradePlayer!, id);
   } else {
     if (game.trade.tradePlayer!.money < game.trade.tradeAmount!) {
       console.log(
@@ -130,31 +149,47 @@ export function tradeProperty(
       );
 
       disableTrade(game);
-      return;
+      return false;
     }
 
     currentPlayer.money += game.trade.tradeAmount!;
     game.trade.tradePlayer!.money -= game.trade.tradeAmount!;
-
-    const inGameProperty = getInGamePropertyById(currentPlayer, id)!;
-
-    game.trade.tradePlayer!.cards.properties.push(inGameProperty);
-    removePropertyCardFromPlayer(currentPlayer, id);
   }
 
   console.log(`opponent: ${game.trade.tradePlayer!.money}`);
   console.log(`me: ${currentPlayer.money}`);
+
+  return true;
+}
+
+export function tradeProperty(
+  game: Game,
+  addProperty: boolean,
+  currentPlayer: Player,
+  ids: number[],
+) {
+  for (let id of ids) {
+    if (addProperty) {
+      const inGameProperty = getInGamePropertyById(
+        game.trade.tradePlayer!,
+        id,
+      )!;
+
+      currentPlayer.cards.properties.push(inGameProperty);
+      removePropertyCardFromPlayer(game.trade.tradePlayer!, id);
+    } else {
+      const inGameProperty = getInGamePropertyById(currentPlayer, id)!;
+
+      game.trade.tradePlayer!.cards.properties.push(inGameProperty);
+      removePropertyCardFromPlayer(currentPlayer, id);
+    }
+  }
 
   console.log("opponent: ");
   game.trade.tradePlayer!.cards.properties.forEach((p) => console.log(p));
 
   console.log("me: ");
   currentPlayer.cards.properties.forEach((p) => console.log(p));
-
-  disableTrade(game);
-  console.log("trade was successfully");
-
-  return;
 }
 
 export function getPlayerByCard(game: Game, id: number): Player | undefined {

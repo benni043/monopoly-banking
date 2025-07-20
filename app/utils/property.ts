@@ -38,13 +38,13 @@ export function activatePropertyCard(game: Game, id: number) {
     return;
   }
 
+  if (game.trade.active) {
+    game.trade.tradeCardIds.push(id);
+    return;
+  }
+
   //property is owned by other player
   if (!isCardAvailable(game, id) && !isCardOwnedByCurrentPlayer(game, id)) {
-    if (game.trade.active) {
-      tradeProperty(game, true, currentPlayer, id);
-      return;
-    }
-
     const opponent = getPlayerByCard(game, id);
     if (!opponent) {
       console.error("opponent does not have this card");
@@ -81,15 +81,6 @@ export function activatePropertyCard(game: Game, id: number) {
 
   //property is free
   if (!hasProperty) {
-    if (game.trade.active) {
-      console.log(
-        "this property does not belong to anyone yet, you cant trade this",
-      );
-
-      disableTrade(game);
-      return;
-    }
-
     if (currentPlayer.money < property.purchasePrice) {
       console.log("you don't have enough money to buy this property");
       return;
@@ -107,12 +98,6 @@ export function activatePropertyCard(game: Game, id: number) {
     console.log(`you have bought ${property.street}`);
     console.log(`me: ${currentPlayer.money}`);
 
-    return;
-  }
-
-  //player owns property
-  if (game.trade.active) {
-    tradeProperty(game, false, currentPlayer, id);
     return;
   }
 

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { getPropertyById } from "./cards";
+import { payAndTrade } from "~/utils/game";
 
 describe("Game Setup", () => {
   it("can add players", () => {
@@ -232,7 +233,7 @@ describe("Gameplay", () => {
     expect(getPlayer(game, "blue")?.money).toBe(1500 + property.rent1Hotel);
   });
 
-  it("can trade property", () => {
+  it("can trade property from me", () => {
     {
       activatePlayerCard(game, "blue");
       buyFullHouse(game, 2);
@@ -245,13 +246,13 @@ describe("Gameplay", () => {
 
         activatePropertyCard(game, 2);
         activatePropertyCard(game, 40);
-        setTradeAmount(game, 100);
+        payAndTrade(game, 100);
       }
       {
         activatePlayerCard(game, "yellow");
 
         activatePropertyCard(game, 5);
-        setTradeAmount(game, 200);
+        payAndTrade(game, 200);
       }
     }
 
@@ -265,11 +266,141 @@ describe("Gameplay", () => {
 
     expect(getPlayer(game, "blue")?.cards.properties.length).toBe(0);
     expect(getPlayer(game, "red")?.cards.properties.length).toBe(2);
-    expect(getInGamePropertyById(getPlayer(game, "red")!, 2)).toBe(property2);
-    expect(getInGamePropertyById(getPlayer(game, "red")!, 40)).toBe(property40);
+    expect(getInGamePropertyById(getPlayer(game, "red")!, 2)?.property).toBe(
+      property2,
+    );
+    expect(getInGamePropertyById(getPlayer(game, "red")!, 40)?.property).toBe(
+      property40,
+    );
     expect(getPlayer(game, "yellow")?.cards.properties.length).toBe(1);
-    expect(getInGamePropertyById(getPlayer(game, "yellow")!, 5)).toBe(
+    expect(getInGamePropertyById(getPlayer(game, "yellow")!, 5)?.property).toBe(
       property5,
+    );
+  });
+
+  it("can trade property from other", () => {
+    {
+      activatePlayerCard(game, "blue");
+      buyFullHouse(game, 2);
+      buyFullHouse(game, 5);
+      buyFullHouse(game, 40);
+
+      getActivePlayer(game)!.money = 1500;
+
+      activatePlayerCard(game, "blue");
+      activatePlayerCard(game, "red");
+      {
+        activatePlayerCard(game, "blue");
+
+        activatePropertyCard(game, 2);
+        activatePropertyCard(game, 40);
+        payAndTrade(game, 100);
+      }
+      {
+        activatePlayerCard(game, "yellow");
+
+        activatePropertyCard(game, 40);
+        payAndTrade(game, 200);
+      }
+    }
+
+    let property2 = getPropertyById(2)!;
+    let property5 = getPropertyById(5)!;
+    let property40 = getPropertyById(40)!;
+
+    expect(getPlayer(game, "blue")?.money).toBe(1500 + 100);
+    expect(getPlayer(game, "red")?.money).toBe(1500 - 100 + 200);
+    expect(getPlayer(game, "yellow")?.money).toBe(1500 - 200);
+
+    expect(getPlayer(game, "blue")?.cards.properties.length).toBe(1);
+    expect(getInGamePropertyById(getPlayer(game, "blue")!, 5)?.property).toBe(
+      property5,
+    );
+    expect(getPlayer(game, "red")?.cards.properties.length).toBe(1);
+    expect(getInGamePropertyById(getPlayer(game, "red")!, 2)?.property).toBe(
+      property2,
+    );
+    expect(getPlayer(game, "yellow")?.cards.properties.length).toBe(1);
+    expect(
+      getInGamePropertyById(getPlayer(game, "yellow")!, 40)?.property,
+    ).toBe(property40);
+  });
+
+  it("cant trade free cards", () => {
+    {
+      activatePlayerCard(game, "blue");
+      buyFullHouse(game, 2);
+      buyFullHouse(game, 5);
+      buyFullHouse(game, 40);
+
+      getActivePlayer(game)!.money = 1500;
+      {
+        activatePlayerCard(game, "red");
+
+        activatePropertyCard(game, 2);
+        activatePropertyCard(game, 39);
+        payAndTrade(game, 100);
+      }
+    }
+
+    let property2 = getPropertyById(2)!;
+    let property5 = getPropertyById(5)!;
+    let property40 = getPropertyById(40)!;
+
+    expect(getPlayer(game, "blue")?.money).toBe(1500);
+    expect(getPlayer(game, "red")?.money).toBe(1500);
+
+    expect(getPlayer(game, "blue")?.cards.properties.length).toBe(3);
+    expect(getInGamePropertyById(getPlayer(game, "blue")!, 2)?.property).toBe(
+      property2,
+    );
+    expect(getInGamePropertyById(getPlayer(game, "blue")!, 5)?.property).toBe(
+      property5,
+    );
+    expect(getInGamePropertyById(getPlayer(game, "blue")!, 40)?.property).toBe(
+      property40,
+    );
+
+    expect(getPlayer(game, "red")?.cards.properties.length).toBe(0);
+  });
+
+  it("cant trade mixed cards", () => {
+    {
+      activatePlayerCard(game, "blue");
+      buyFullHouse(game, 2);
+
+      getActivePlayer(game)!.money = 1500;
+
+      activatePlayerCard(game, "blue");
+
+      activatePlayerCard(game, "red");
+      buyFullHouse(game, 12);
+
+      getActivePlayer(game)!.money = 1500;
+
+      {
+        activatePlayerCard(game, "blue");
+
+        activatePropertyCard(game, 2);
+        activatePropertyCard(game, 12);
+        payAndTrade(game, 100);
+      }
+    }
+
+    let property2 = getPropertyById(2)!;
+    let property12 = getPropertyById(12)!;
+
+    expect(getPlayer(game, "blue")?.money).toBe(1500);
+    expect(getPlayer(game, "red")?.money).toBe(1500);
+
+    expect(getPlayer(game, "blue")?.cards.properties.length).toBe(1);
+    expect(getInGamePropertyById(getPlayer(game, "blue")!, 2)?.property).toBe(
+      property2,
+    );
+
+    expect(getPlayer(game, "red")?.cards.properties.length).toBe(1);
+    expect(getInGamePropertyById(getPlayer(game, "red")!, 12)?.property).toBe(
+      property12,
     );
   });
 
