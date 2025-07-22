@@ -1,8 +1,5 @@
 import { sellCardToBank } from "~/utils/special/bank";
-import {
-  getPropertyById,
-  removePropertyCardFromGamePool,
-} from "~/utils/sites/property";
+import { getPropertyById, removePropertyCardFromGamePool } from "~/utils/sites/property";
 
 export function activatePropertyCard(game: Game, id: number) {
   if (game.currentPlayerColor === undefined) {

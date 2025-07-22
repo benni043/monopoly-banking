@@ -28,14 +28,14 @@ export const lines: Line[] = [
 ];
 
 export function getLineById(id: number): Line | undefined {
-  return companies.find((line: Line) => line.id === id);
+  return lines.find((line: Line) => line.id === id);
 }
 
 export function removeLineCardFromGamePool(game: Game, id: number) {
-  const index = game.cards.companies.findIndex((p) => p.id === id);
-  if (index !== -1) game.cards.companies.splice(index, 1);
+  const index = game.cards.lines.findIndex((p) => p.id === id);
+  if (index !== -1) game.cards.lines.splice(index, 1);
 }
 
-export function getAllLinesByPlayer(game: Game, player: Player) {
-  return player.cards.companies;
+export function getAllLinesByPlayer(player: Player) {
+  return player.cards.lines;
 }

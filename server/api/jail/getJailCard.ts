@@ -4,7 +4,7 @@ import { initSocket, io } from "~~/server/socket-io";
 export default defineEventHandler(async (event: H3Event) => {
   initSocket(event);
 
-  io.of("/").emit("game:jailCard");
+  io.of("/").emit("game:getJailCard");
 
   return {
     statusCode: 200,

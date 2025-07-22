@@ -1,4 +1,7 @@
 import { hasPlayerPropertyCard } from "~/utils/player";
+import { properties, type Property } from "~/utils/sites/property";
+import { companies, type Company } from "~/utils/sites/companies";
+import { type Line, lines } from "~/utils/sites/lines";
 
 export interface Game {
   players: Player[];
@@ -20,8 +23,8 @@ export interface Game {
 
   cards: {
     properties: Property[];
-    companies: Extra[];
-    lines: Extra[];
+    companies: Company[];
+    lines: Line[];
   };
 }
 

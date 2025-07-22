@@ -17,8 +17,15 @@ function onPropertyCard(id: number) {
   });
 }
 
-function onJailCard() {
-  $fetch("/api/jailCard/", {
+function onOutOfJailCard() {
+  $fetch("/api/jail/oufOfJail/", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
+
+function onGetJailCard() {
+  $fetch("/api/jail/getJailCard/", {
     method: "POST",
     body: JSON.stringify({}),
   });
@@ -84,8 +91,19 @@ function onPay(amount: number) {
         </button>
       </div>
       <div>
-        <button class="cursor-pointer border px-2 rounded" @click="onJailCard">
-          send Jail card
+        <button
+          class="cursor-pointer border px-2 rounded"
+          @click="onOutOfJailCard"
+        >
+          send go to Jail
+        </button>
+      </div>
+      <div>
+        <button
+          class="cursor-pointer border px-2 rounded"
+          @click="onGetJailCard"
+        >
+          send get Jail free card
         </button>
       </div>
     </div>

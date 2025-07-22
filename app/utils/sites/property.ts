@@ -371,6 +371,6 @@ export function removePropertyCardFromGamePool(game: Game, id: number) {
   if (index !== -1) game.cards.properties.splice(index, 1);
 }
 
-export function getAllPropertiesByPlayer(game: Game, player: Player) {
+export function getAllPropertiesByPlayer(player: Player) {
   return player.cards.properties;
 }

@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { activatePropertyCard } from "~/utils/sites/all";
+import { getPropertyById } from "~/utils/sites/property";
 
 describe("Game Setup", () => {
   it("can add players", () => {

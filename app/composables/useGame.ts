@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
-import { finishedOneRound, payAndTrade } from "~/utils/game";
+import { activatePropertyCard } from "~/utils/sites/all";
 import { activateBankCard } from "~/utils/special/bank";
+import { activatePropertyLevy } from "~/utils/special/propertyLevy";
 
 let gameRef: Ref<Game> | undefined;
 let socket: ReturnType<typeof io> | undefined;
@@ -23,8 +24,12 @@ export function useGame() {
       activatePropertyCard(gameRef!.value, id);
     });
 
-    socket.on("game:jailCard", () => {
+    socket.on("game:oufOfJail", () => {
       outOfJail(gameRef!.value);
+    });
+
+    socket.on("game:getJailCard", () => {
+      addOutOfJailCard(gameRef!.value);
     });
 
     socket.on("game:finishedOneRound", () => {

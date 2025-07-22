@@ -1,12 +1,15 @@
 import { disableTrade } from "~/utils/game";
 import { disableBankTrade } from "~/utils/special/bank";
+import type { Company } from "~/utils/sites/companies";
+import type { Line } from "~/utils/sites/lines";
+import type { Property } from "~/utils/sites/property";
 
 export interface Player {
   color: Color;
   cards: {
     properties: InGameProperty[];
-    companies: Extra[];
-    lines: Extra[];
+    companies: Company[];
+    lines: Line[];
   };
   money: number;
   hasEscapePrisonCard: boolean;
@@ -69,8 +72,20 @@ export function activatePlayerCard(game: Game, color: Color) {
   }
 }
 
-export function addEscapePrisonCard(player: Player) {
-  player.hasEscapePrisonCard = true;
+export function addOutOfJailCard(game: Game) {
+  if (game.currentPlayerColor === undefined) {
+    console.error("no player selected");
+    return;
+  }
+
+  const currentPlayer = getPlayer(game, game.currentPlayerColor);
+  if (!currentPlayer) {
+    console.error("player search error");
+    return;
+  }
+
+  currentPlayer.hasEscapePrisonCard = true;
+  console.log(`${currentPlayer.color} got prisonEscapeCard`);
 }
 
 export function getInGamePropertyById(

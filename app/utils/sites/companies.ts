@@ -31,6 +31,6 @@ export function removeCompanyCardFromGamePool(game: Game, id: number) {
   if (index !== -1) game.cards.companies.splice(index, 1);
 }
 
-export function getAllCompaniesByPlayer(game: Game, player: Player) {
+export function getAllCompaniesByPlayer(player: Player) {
   return player.cards.companies;
 }
