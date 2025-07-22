@@ -17,6 +17,15 @@ function onPropertyCard(id: number) {
   });
 }
 
+let bankCardId = ref(0);
+
+function onBankCard(id: number) {
+  $fetch("/api/bankCard/", {
+    method: "POST",
+    body: JSON.stringify({ id }),
+  });
+}
+
 function onOutOfJailCard() {
   $fetch("/api/jail/oufOfJail/", {
     method: "POST",
@@ -31,8 +40,8 @@ function onGetJailCard() {
   });
 }
 
-function onBankCard() {
-  $fetch("/api/bankCard/", {
+function onBankTradeCard() {
+  $fetch("/api/bankTradeCard/", {
     method: "POST",
     body: JSON.stringify({}),
   });
@@ -86,6 +95,15 @@ function payPropertyLevy() {
       <div class="flex gap-2">
         <button
           class="cursor-pointer border px-2 rounded"
+          @click="onBankCard(bankCardId)"
+        >
+          send bank card
+        </button>
+        <input class="border px-2 rounded" v-model="bankCardId" type="number" />
+      </div>
+      <div class="flex gap-2">
+        <button
+          class="cursor-pointer border px-2 rounded"
           @click="onPay(payAmount)"
         >
           pay
@@ -93,8 +111,8 @@ function payPropertyLevy() {
         <input class="border px-2 rounded" v-model="payAmount" type="number" />
       </div>
       <div>
-        <button class="cursor-pointer border px-2 rounded" @click="onBankCard">
-          send Bank card
+        <button class="cursor-pointer border px-2 rounded" @click="onBankTradeCard">
+          send Banktrade card
         </button>
       </div>
       <div>

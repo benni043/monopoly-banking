@@ -1,5 +1,3 @@
-import { type Line, lines } from "~/utils/sites/lines";
-
 export interface Bank {
   id: number;
   text: string;
@@ -86,4 +84,28 @@ export const bankCards: Bank[] = [
 
 export function getBankCardById(id: number): Bank | undefined {
   return bankCards.find((bank: Bank) => bank.id === id);
+}
+
+export function activateBankCard(game: Game, id: number) {
+  if (game.currentPlayerColor === undefined) {
+    console.error("no player selected");
+    return;
+  }
+
+  const currentPlayer = getPlayer(game, game.currentPlayerColor);
+  if (!currentPlayer) {
+    console.error("player search error");
+    return;
+  }
+
+  const bankCardById = getBankCardById(id);
+  if (!bankCardById) {
+    console.error("bank card error");
+    return;
+  }
+
+  currentPlayer.money += bankCardById.amount;
+
+  console.log(bankCardById.amount);
+  console.log(bankCardById.text);
 }

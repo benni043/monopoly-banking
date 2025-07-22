@@ -1,4 +1,4 @@
-export function activateBankCard(game: Game) {
+export function activateBankTradeCard(game: Game) {
   if (game.currentPlayerColor === undefined) {
     console.log("no player selected");
     return;
