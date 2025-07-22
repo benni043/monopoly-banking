@@ -1,3 +1,5 @@
+import { activatePropertyLevy } from "~/utils/special/propertyLevy";
+
 export interface Risiko {
   id: number;
   text: string;
@@ -81,3 +83,56 @@ export const risikoCards: Risiko[] = [
     amount: 0,
   },
 ];
+
+export function getRisikoCardById(id: number): Risiko | undefined {
+  return risikoCards.find((risiko: Risiko) => risiko.id === id);
+}
+
+export function activateRisikoCard(game: Game, id: number) {
+  if (game.currentPlayerColor === undefined) {
+    console.error("no player selected");
+    return;
+  }
+
+  const currentPlayer = getPlayer(game, game.currentPlayerColor);
+  if (!currentPlayer) {
+    console.error("player search error");
+    return;
+  }
+
+  const risikoCardById = getRisikoCardById(id);
+  if (!risikoCardById) {
+    console.error("risiko card error");
+    return;
+  }
+
+  switch (id) {
+    case 14: {
+      activatePropertyLevy(game);
+      console.log("property levy after risiko card");
+      break;
+    }
+    case 15: {
+      payHouseAndHotelPriceSum(currentPlayer);
+      console.log("payd for all houses");
+      break;
+    }
+    default: {
+      currentPlayer.money += risikoCardById.amount;
+      console.log(risikoCardById.amount);
+      console.log(risikoCardById.text);
+    }
+  }
+}
+
+export function payHouseAndHotelPriceSum(player: Player) {
+  let houses = 0;
+  let hotels = 0;
+
+  player.cards.properties.forEach((property: InGameProperty) => {
+    houses += property.houseCount;
+    hotels += property.hotelCount;
+  });
+
+  player.money -= houses * 20 + hotels * 80;
+}

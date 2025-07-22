@@ -1,3 +1,5 @@
+import type { Property } from "~/utils/sites/property";
+
 export interface Bank {
   id: number;
   text: string;
