@@ -46,6 +46,13 @@ function onPay(amount: number) {
     body: JSON.stringify({ amount }),
   });
 }
+
+function payPropertyLevy() {
+  $fetch("/api/propertyLevy/", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
 </script>
 
 <template>
@@ -88,6 +95,14 @@ function onPay(amount: number) {
       <div>
         <button class="cursor-pointer border px-2 rounded" @click="onBankCard">
           send Bank card
+        </button>
+      </div>
+      <div>
+        <button
+          class="cursor-pointer border px-2 rounded"
+          @click="payPropertyLevy"
+        >
+          send payPropertyLevy card
         </button>
       </div>
       <div>

@@ -100,6 +100,11 @@ export function disableTrade(game: Game) {
 export function payAndTrade(game: Game, amount: number) {
   game.trade.tradeAmount = amount;
 
+  if (!game.trade.tradePlayer) {
+    console.log("no tradePlayer selected");
+    return;
+  }
+
   const currentPlayer = getPlayer(game, game.currentPlayerColor!);
   if (!currentPlayer) {
     console.error("player search error");
