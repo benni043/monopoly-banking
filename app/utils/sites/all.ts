@@ -1,31 +1,8 @@
-import { sellCardToBank } from "~/utils/bank";
-
-export interface Property {
-  id: number;
-  color: string;
-  state: string;
-  street: string;
-  rent: number;
-  rent1House: number;
-  rent2Houses: number;
-  rent3Houses: number;
-  rent4Houses: number;
-  rent1Hotel: number;
-  purchasePrice: number;
-  housePrice: number;
-  hotelPrice: number;
-}
-
-export interface Extra {
-  id: number;
-  type: string;
-  name: string;
-}
-
-export interface Special {
-  id: number;
-  name: string;
-}
+import { sellCardToBank } from "~/utils/special/bank";
+import {
+  getPropertyById,
+  removePropertyCardFromGamePool,
+} from "~/utils/sites/property";
 
 export function activatePropertyCard(game: Game, id: number) {
   if (game.currentPlayerColor === undefined) {
@@ -151,9 +128,4 @@ export function activatePropertyCard(game: Game, id: number) {
       `you don't have enough money to buy a house on ${property.street}`,
     );
   }
-}
-
-export function removePropertyCardFromGamePool(game: Game, id: number) {
-  const index = game.cards.properties.findIndex((p) => p.id === id);
-  if (index !== -1) game.cards.properties.splice(index, 1);
 }

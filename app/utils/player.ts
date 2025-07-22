@@ -1,5 +1,5 @@
 import { disableTrade } from "~/utils/game";
-import { disableBankTrade } from "~/utils/bank";
+import { disableBankTrade } from "~/utils/special/bank";
 
 export interface Player {
   color: Color;

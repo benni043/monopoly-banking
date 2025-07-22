@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 import { finishedOneRound, payAndTrade } from "~/utils/game";
-import { activateBankCard } from "~/utils/bank";
+import { activateBankCard } from "~/utils/special/bank";
 
 let gameRef: Ref<Game> | undefined;
 let socket: ReturnType<typeof io> | undefined;
@@ -37,6 +37,10 @@ export function useGame() {
 
     socket.on("game:bankTrade", () => {
       activateBankCard(gameRef!.value);
+    });
+
+    socket.on("game:propertyLevy", () => {
+      activatePropertyLevy(gameRef!.value);
     });
   }
 

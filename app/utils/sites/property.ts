@@ -1,4 +1,18 @@
-import type { Special } from "~/utils/property";
+export interface Property {
+  id: number;
+  color: string;
+  state: string;
+  street: string;
+  rent: number;
+  rent1House: number;
+  rent2Houses: number;
+  rent3Houses: number;
+  rent4Houses: number;
+  rent1Hotel: number;
+  purchasePrice: number;
+  housePrice: number;
+  hotelPrice: number;
+}
 
 export const properties: Property[] = [
   {
@@ -352,62 +366,11 @@ export function getPropertyById(id: number): Property | undefined {
   return properties.find((property: Property) => property.id === id);
 }
 
-export const lines: Extra[] = [
-  {
-    id: 18,
-    type: "Linie",
-    name: "Wien-Innsbruck",
-  },
-  {
-    id: 8,
-    type: "Linie",
-    name: "Wien-Graz",
-  },
-  {
-    id: 24,
-    type: "Linie",
-    name: "Glocknerstraße",
-  },
-  {
-    id: 13,
-    type: "Linie",
-    name: "Wien-Budapest",
-  },
-];
+export function removePropertyCardFromGamePool(game: Game, id: number) {
+  const index = game.cards.properties.findIndex((p) => p.id === id);
+  if (index !== -1) game.cards.properties.splice(index, 1);
+}
 
-export const companies: Extra[] = [
-  {
-    id: 34,
-    type: "Betrieb",
-    name: "Flugl. Wien-Venedig",
-  },
-  {
-    id: 14,
-    type: "Betrieb",
-    name: "Seilbahn",
-  },
-  {
-    id: 4,
-    type: "Betrieb",
-    name: "Elektr. Kraftwerk",
-  },
-];
-
-export const specialCards: Special[] = [
-  {
-    id: 41,
-    name: "Bank",
-  },
-  {
-    id: 42,
-    name: "Gehe aus dem Gefängnis",
-  },
-  {
-    id: 43,
-    name: "Gehe über Los",
-  },
-  {
-    id: 44,
-    name: "Zahle 10% Vermögensabgabe",
-  },
-];
+export function getAllPropertiesByPlayer(game: Game, player: Player) {
+  return player.cards.properties;
+}
