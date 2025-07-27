@@ -421,7 +421,7 @@ export function activatePropertyCard(game: Game, id: number) {
   }
 
   if (game.bankTrade.active) {
-    sellCardToBank({ id: id, type: "property" }, currentPlayer);
+    sellCardToBank({ id: id, type: "property" }, currentPlayer, game);
     return;
   }
 

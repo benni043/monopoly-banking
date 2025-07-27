@@ -1,8 +1,12 @@
 import type { CardType } from "~/utils/sites/all";
 import {
+  hasPlayerCard,
   removeCompanyCardFromPlayer,
   removeLineCardFromPlayer,
 } from "~/utils/player";
+import { getPropertyById } from "~/utils/sites/property";
+import { getLineById } from "~/utils/sites/lines";
+import { getCompanyById } from "~/utils/sites/companies";
 
 export function activateBankTradeCard(game: Game) {
   if (game.currentPlayerColor === undefined) {
@@ -26,8 +30,9 @@ export function disableBankTrade(game: Game) {
 export function sellCardToBank(
   obj: { id: number; type: CardType },
   currentPlayer: Player,
+  game: Game,
 ) {
-  if (!hasPlayerPropertyCard(currentPlayer, obj.id)) {
+  if (!hasPlayerCard(currentPlayer, obj.id)) {
     console.log("this property does not belong to you");
     return;
   }
@@ -61,6 +66,7 @@ export function sellCardToBank(
 
       currentPlayer.money += inGamePropertyById.property.purchasePrice / 2;
       removePropertyCardFromPlayer(currentPlayer, obj.id);
+      game.cards.properties.push(getPropertyById(obj.id)!);
 
       console.log(
         `${currentPlayer.color} sold ${inGamePropertyById.property.street} to bank for ${inGamePropertyById.property.purchasePrice / 2}`,
@@ -71,12 +77,18 @@ export function sellCardToBank(
     case "line": {
       currentPlayer.money += 80;
       removeLineCardFromPlayer(currentPlayer, obj.id);
+      game.cards.lines.push(getLineById(obj.id)!);
+
+      console.log(`${currentPlayer.color} sold line to bank for 80`);
 
       break;
     }
     default: {
       currentPlayer.money += 80;
       removeCompanyCardFromPlayer(currentPlayer, obj.id);
+      game.cards.companies.push(getCompanyById(obj.id)!);
+
+      console.log(`${currentPlayer.color} sold company to bank for 80`);
 
       break;
     }

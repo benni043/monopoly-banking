@@ -1,4 +1,5 @@
 import {
+  hasPlayerCard,
   hasPlayerPropertyCard,
   removeCompanyCardFromPlayer,
   removeLineCardFromPlayer,
@@ -126,7 +127,7 @@ export function payAndTrade(game: Game, amount: number) {
   let firstResult = null;
 
   for (let tradeCardId of game.trade.tradeCardIds) {
-    const result = hasPlayerPropertyCard(currentPlayer, tradeCardId.id);
+    const result = hasPlayerCard(currentPlayer, tradeCardId.id);
 
     if (firstResult === null) {
       firstResult = result;

@@ -4,6 +4,7 @@ import { activatePropertyLevy } from "~/utils/special/propertyLevy";
 import { activateBankCard } from "~/utils/actionCards/bankField";
 import { activateRiskCard } from "~/utils/actionCards/riskField";
 import { activatePropertyCard } from "~/utils/sites/property";
+import { activateLineCard } from "~/utils/sites/lines";
 
 let gameRef: Ref<Game> | undefined;
 let socket: ReturnType<typeof io> | undefined;
@@ -24,6 +25,10 @@ export function useGame() {
 
     socket.on("game:propertyCard", (id: number) => {
       activatePropertyCard(gameRef!.value, id);
+    });
+
+    socket.on("game:lineCard", (id: number) => {
+      activateLineCard(gameRef!.value, id);
     });
 
     socket.on("game:oufOfJail", () => {

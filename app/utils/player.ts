@@ -97,6 +97,14 @@ export function getInGamePropertyById(
   );
 }
 
+export function hasPlayerCard(player: Player, id: number): boolean {
+  return (
+    player.cards.properties.some((property) => property.property.id === id) ||
+    player.cards.lines.some((line) => line.id === id) ||
+    player.cards.companies.some((company) => company.id === id)
+  );
+}
+
 export function hasPlayerPropertyCard(player: Player, id: number): boolean {
   return player.cards.properties.some(
     (property) => property.property.id === id,

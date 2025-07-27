@@ -1,6 +1,7 @@
 import type { CardType } from "~/utils/sites/all";
 import { sellCardToBank } from "~/utils/special/bank";
 import { hasPlayerLineCard } from "~/utils/player";
+import { getPlayerByCard } from "~/utils/game";
 
 export interface Line {
   id: number;
@@ -63,7 +64,7 @@ export function activateLineCard(game: Game, id: number) {
   }
 
   if (game.bankTrade.active) {
-    sellCardToBank({ id: id, type: "line" }, currentPlayer);
+    sellCardToBank({ id: id, type: "line" }, currentPlayer, game);
     return;
   }
 
@@ -83,7 +84,7 @@ export function activateLineCard(game: Game, id: number) {
       return;
     }
 
-    const lineCount = getAllLinesByPlayer(currentPlayer).length;
+    const lineCount = getAllLinesByPlayer(getPlayerByCard(game, id)!).length;
 
     switch (lineCount) {
       case 1: {
@@ -132,4 +133,6 @@ export function activateLineCard(game: Game, id: number) {
 
     return;
   }
+
+  console.log(`you already have ${lineById.name}`);
 }
