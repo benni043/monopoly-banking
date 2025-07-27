@@ -1,9 +1,9 @@
 import { io } from "socket.io-client";
-import { activatePropertyCard } from "~/utils/sites/all";
 import { activateBankTradeCard } from "~/utils/special/bank";
 import { activatePropertyLevy } from "~/utils/special/propertyLevy";
 import { activateBankCard } from "~/utils/actionCards/bankField";
 import { activateRiskCard } from "~/utils/actionCards/riskField";
+import { activatePropertyCard } from "~/utils/sites/property";
 
 let gameRef: Ref<Game> | undefined;
 let socket: ReturnType<typeof io> | undefined;

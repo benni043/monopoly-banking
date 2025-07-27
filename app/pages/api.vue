@@ -9,7 +9,6 @@ function onPlayerCard(color: string) {
 }
 
 let id = ref(0);
-
 function onPropertyCard(id: number) {
   $fetch("/api/property/", {
     method: "POST",
@@ -17,8 +16,23 @@ function onPropertyCard(id: number) {
   });
 }
 
-let bankCardId = ref(0);
+let lineId = ref(0);
+function onLineCard(id: number) {
+  $fetch("/api/line/", {
+    method: "POST",
+    body: JSON.stringify({ id }),
+  });
+}
 
+let companyId = ref(0);
+function onCompanyCard(id: number) {
+  $fetch("/api/company/", {
+    method: "POST",
+    body: JSON.stringify({ id }),
+  });
+}
+
+let bankCardId = ref(0);
 function onBankCard(id: number) {
   $fetch("/api/bankCard/", {
     method: "POST",
@@ -27,7 +41,6 @@ function onBankCard(id: number) {
 }
 
 let riskCardId = ref(0);
-
 function onRiskCard(id: number) {
   $fetch("/api/riskCard/", {
     method: "POST",
@@ -36,28 +49,18 @@ function onRiskCard(id: number) {
 }
 
 function onOutOfJailCard() {
-  $fetch("/api/jail/oufOfJail/", {
-    method: "POST",
-    body: JSON.stringify({}),
-  });
+  $fetch("/api/jail/oufOfJail/", { method: "POST" });
 }
 
 function onGetJailCard() {
-  $fetch("/api/jail/getJailCard/", {
-    method: "POST",
-    body: JSON.stringify({}),
-  });
+  $fetch("/api/jail/getJailCard/", { method: "POST" });
 }
 
 function onBankTradeCard() {
-  $fetch("/api/bankTradeCard/", {
-    method: "POST",
-    body: JSON.stringify({}),
-  });
+  $fetch("/api/bankTradeCard/", { method: "POST" });
 }
 
 let payAmount = ref(0);
-
 function onPay(amount: number) {
   $fetch("/api/pay/", {
     method: "POST",
@@ -66,98 +69,153 @@ function onPay(amount: number) {
 }
 
 function payPropertyLevy() {
-  $fetch("/api/propertyLevy/", {
-    method: "POST",
-    body: JSON.stringify({}),
-  });
+  $fetch("/api/propertyLevy/", { method: "POST" });
 }
 </script>
 
 <template>
-  <div>
-    <h1 class="text-2xl font-bold">monopoly api</h1>
+  <div class="p-6 bg-gray-100 min-h-screen">
+    <h1 class="text-3xl font-bold text-center mb-6 text-indigo-700">
+      Monopoly API Tester
+    </h1>
 
-    <div class="flex gap-2 flex-col">
-      <div class="flex gap-2">
-        <button
-          class="cursor-pointer border px-2 rounded"
-          @click="onPlayerCard(color)"
-        >
-          send Player card
-        </button>
-        <select class="border px-2 rounded" v-model="color">
-          <option value="red">Red</option>
-          <option value="blue">Blue</option>
-          <option value="green">Green</option>
-          <option value="yellow">Yellow</option>
-        </select>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Player Card -->
+      <div class="bg-white p-4 rounded-xl shadow-md">
+        <h2 class="text-lg font-semibold mb-2 text-gray-800">Player Card</h2>
+        <div class="flex gap-2">
+          <button
+            class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-4 py-2 rounded-lg"
+            @click="onPlayerCard(color)"
+          >
+            Send Player Card
+          </button>
+          <select
+            class="border px-3 py-2 rounded-lg bg-gray-50"
+            v-model="color"
+          >
+            <option value="red">Red</option>
+            <option value="blue">Blue</option>
+            <option value="green">Green</option>
+            <option value="yellow">Yellow</option>
+          </select>
+        </div>
       </div>
-      <div class="flex gap-2">
-        <button
-          class="cursor-pointer border px-2 rounded"
-          @click="onPropertyCard(id)"
-        >
-          send Property card
-        </button>
-        <input class="border px-2 rounded" v-model="id" type="number" />
+
+      <!-- Property / Line / Company -->
+      <div class="bg-white p-4 rounded-xl shadow-md space-y-4">
+        <h2 class="text-lg font-semibold text-gray-800">Properties</h2>
+        <div class="flex gap-2">
+          <input
+            class="border px-3 py-2 rounded-lg flex-1"
+            v-model="id"
+            type="number"
+          />
+          <button
+            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex-1"
+            @click="onPropertyCard(id)"
+          >
+            Property
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <input
+            class="border px-3 py-2 rounded-lg flex-1"
+            v-model="lineId"
+            type="number"
+          />
+          <button
+            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex-1"
+            @click="onLineCard(lineId)"
+          >
+            Line
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <input
+            class="border px-3 py-2 rounded-lg flex-1"
+            v-model="companyId"
+            type="number"
+          />
+          <button
+            class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg flex-1"
+            @click="onCompanyCard(companyId)"
+          >
+            Company
+          </button>
+        </div>
       </div>
-      <div class="flex gap-2">
-        <button
-          class="cursor-pointer border px-2 rounded"
-          @click="onBankCard(bankCardId)"
-        >
-          send bank card
-        </button>
-        <input class="border px-2 rounded" v-model="bankCardId" type="number" />
+
+      <!-- Bank & Risk Cards -->
+      <div class="bg-white p-4 rounded-xl shadow-md space-y-4">
+        <h2 class="text-lg font-semibold text-gray-800">Bank / Risk Cards</h2>
+        <div class="flex gap-2">
+          <input
+            class="border px-3 py-2 rounded-lg flex-1"
+            v-model="bankCardId"
+            type="number"
+          />
+          <button
+            class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg flex-1"
+            @click="onBankCard(bankCardId)"
+          >
+            Bank Card
+          </button>
+        </div>
+        <div class="flex gap-2">
+          <input
+            class="border px-3 py-2 rounded-lg flex-1"
+            v-model="riskCardId"
+            type="number"
+          />
+          <button
+            class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex-1"
+            @click="onRiskCard(riskCardId)"
+          >
+            Risk Card
+          </button>
+        </div>
       </div>
-      <div class="flex gap-2">
+
+      <!-- Pay & Special Actions -->
+      <div class="bg-white p-4 rounded-xl shadow-md space-y-4">
+        <h2 class="text-lg font-semibold text-gray-800">Payments & Actions</h2>
+        <div class="flex gap-2">
+          <input
+            class="border px-3 py-2 rounded-lg flex-1"
+            v-model="payAmount"
+            type="number"
+          />
+          <button
+            class="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-lg flex-1"
+            @click="onPay(payAmount)"
+          >
+            Pay
+          </button>
+        </div>
         <button
-          class="cursor-pointer border px-2 rounded"
-          @click="onRiskCard(riskCardId)"
-        >
-          send risk card
-        </button>
-        <input class="border px-2 rounded" v-model="riskCardId" type="number" />
-      </div>
-      <div class="flex gap-2">
-        <button
-          class="cursor-pointer border px-2 rounded"
-          @click="onPay(payAmount)"
-        >
-          pay
-        </button>
-        <input class="border px-2 rounded" v-model="payAmount" type="number" />
-      </div>
-      <div>
-        <button
-          class="cursor-pointer border px-2 rounded"
+          class="w-full bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg"
           @click="onBankTradeCard"
         >
-          send Banktrade card
+          Bank Trade Card
         </button>
-      </div>
-      <div>
         <button
-          class="cursor-pointer border px-2 rounded"
+          class="w-full bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg"
           @click="payPropertyLevy"
         >
-          send payPropertyLevy card
+          Pay Property Levy
         </button>
-      </div>
-      <div>
         <button
-          class="cursor-pointer border px-2 rounded"
+          class="w-full bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg"
           @click="onOutOfJailCard"
         >
-          send go to Jail
+          Go to Jail
         </button>
-      </div>
-      <div>
         <button
-          class="cursor-pointer border px-2 rounded"
+          class="w-full bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
           @click="onGetJailCard"
         >
-          send get Jail free card
+          Get Out of Jail
         </button>
       </div>
     </div>

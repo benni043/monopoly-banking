@@ -103,6 +103,14 @@ export function hasPlayerPropertyCard(player: Player, id: number): boolean {
   );
 }
 
+export function hasPlayerLineCard(player: Player, id: number): boolean {
+  return player.cards.lines.some((line) => line.id === id);
+}
+
+export function hasPlayerCompanyCard(player: Player, id: number): boolean {
+  return player.cards.companies.some((company) => company.id === id);
+}
+
 export function removePropertyCardFromPlayer(player: Player, id: number) {
   const index = player.cards.properties.findIndex((p) => p.property.id === id);
   if (index !== -1) player.cards.properties.splice(index, 1);
