@@ -2,8 +2,8 @@ import { io } from "socket.io-client";
 import { activatePropertyCard } from "~/utils/sites/all";
 import { activateBankTradeCard } from "~/utils/special/bank";
 import { activatePropertyLevy } from "~/utils/special/propertyLevy";
-import { activateBankCard } from "~/utils/actionCards/bank";
-import { activateRisikoCard } from "~/utils/actionCards/risiko";
+import { activateBankCard } from "~/utils/actionCards/bankField";
+import { activateRiskCard } from "~/utils/actionCards/riskField";
 
 let gameRef: Ref<Game> | undefined;
 let socket: ReturnType<typeof io> | undefined;
@@ -55,7 +55,7 @@ export function useGame() {
     });
 
     socket.on("game:risikoCard", (id: number) => {
-      activateRisikoCard(gameRef!.value, id);
+      activateRiskCard(gameRef!.value, id);
     });
   }
 

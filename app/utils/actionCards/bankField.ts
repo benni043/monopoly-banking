@@ -1,12 +1,12 @@
 import type { Property } from "~/utils/sites/property";
 
-export interface Bank {
+export interface BankField {
   id: number;
   text: string;
   amount: number;
 }
 
-export const bankCards: Bank[] = [
+export const bankCards: BankField[] = [
   {
     id: 41,
     text: "Für Bankzinsen erhältst du",
@@ -39,7 +39,7 @@ export const bankCards: Bank[] = [
   },
   {
     id: 47,
-    text: "Die Bank bezahlt dir an Zinsen",
+    text: "Die BankField bezahlt dir an Zinsen",
     amount: 25,
   },
   {
@@ -84,8 +84,8 @@ export const bankCards: Bank[] = [
   },
 ];
 
-export function getBankCardById(id: number): Bank | undefined {
-  return bankCards.find((bank: Bank) => bank.id === id);
+export function getBankCardById(id: number): BankField | undefined {
+  return bankCards.find((bank: BankField) => bank.id === id);
 }
 
 export function activateBankCard(game: Game, id: number) {

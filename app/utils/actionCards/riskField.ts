@@ -1,12 +1,12 @@
 import { activatePropertyLevy } from "~/utils/special/propertyLevy";
 
-export interface Risiko {
+export interface RiskField {
   id: number;
   text: string;
   amount: number;
 }
 
-export const risikoCards: Risiko[] = [
+export const riskCards: RiskField[] = [
   {
     id: 1,
     text: "Für unerlaubtes Parken bezahlst du",
@@ -29,7 +29,7 @@ export const risikoCards: Risiko[] = [
   },
   {
     id: 5,
-    text: "Die Bank zahlt dir an Dividenden",
+    text: "Die BankField zahlt dir an Dividenden",
     amount: 60,
   },
   {
@@ -84,11 +84,11 @@ export const risikoCards: Risiko[] = [
   },
 ];
 
-export function getRisikoCardById(id: number): Risiko | undefined {
-  return risikoCards.find((risiko: Risiko) => risiko.id === id);
+export function getRiskCardById(id: number): RiskField | undefined {
+  return riskCards.find((risk: RiskField) => risk.id === id);
 }
 
-export function activateRisikoCard(game: Game, id: number) {
+export function activateRiskCard(game: Game, id: number) {
   if (game.currentPlayerColor === undefined) {
     console.error("no player selected");
     return;
@@ -100,16 +100,16 @@ export function activateRisikoCard(game: Game, id: number) {
     return;
   }
 
-  const risikoCardById = getRisikoCardById(id);
-  if (!risikoCardById) {
-    console.error("risiko card error");
+  const riskCardById = getRiskCardById(id);
+  if (!riskCardById) {
+    console.error("risk card error");
     return;
   }
 
   switch (id) {
     case 14: {
       activatePropertyLevy(game);
-      console.log("property levy after risiko card");
+      console.log("property levy after risk card");
       console.log(currentPlayer.money);
       break;
     }
@@ -120,9 +120,9 @@ export function activateRisikoCard(game: Game, id: number) {
       break;
     }
     default: {
-      currentPlayer.money += risikoCardById.amount;
-      console.log(risikoCardById.amount);
-      console.log(risikoCardById.text);
+      currentPlayer.money += riskCardById.amount;
+      console.log(riskCardById.amount);
+      console.log(riskCardById.text);
     }
   }
 }

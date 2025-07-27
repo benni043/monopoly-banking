@@ -26,10 +26,10 @@ function onBankCard(id: number) {
   });
 }
 
-let risikoCardId = ref(0);
+let riskCardId = ref(0);
 
-function onRisikoCard(id: number) {
-  $fetch("/api/risikoCard/", {
+function onRiskCard(id: number) {
+  $fetch("/api/riskCard/", {
     method: "POST",
     body: JSON.stringify({ id }),
   });
@@ -113,15 +113,11 @@ function payPropertyLevy() {
       <div class="flex gap-2">
         <button
           class="cursor-pointer border px-2 rounded"
-          @click="onRisikoCard(risikoCardId)"
+          @click="onRiskCard(riskCardId)"
         >
-          send risiko card
+          send risk card
         </button>
-        <input
-          class="border px-2 rounded"
-          v-model="risikoCardId"
-          type="number"
-        />
+        <input class="border px-2 rounded" v-model="riskCardId" type="number" />
       </div>
       <div class="flex gap-2">
         <button
