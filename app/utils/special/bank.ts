@@ -1,3 +1,9 @@
+import type { CardType } from "~/utils/sites/all";
+import {
+  removeCompanyCardFromPlayer,
+  removeLineCardFromPlayer,
+} from "~/utils/player";
+
 export function activateBankTradeCard(game: Game) {
   if (game.currentPlayerColor === undefined) {
     console.log("no player selected");
@@ -17,41 +23,62 @@ export function disableBankTrade(game: Game) {
   game.bankTrade.active = false;
 }
 
-export function sellCardToBank(id: number, currentPlayer: Player) {
-  if (!hasPlayerPropertyCard(currentPlayer, id)) {
+export function sellCardToBank(
+  obj: { id: number; type: CardType },
+  currentPlayer: Player,
+) {
+  if (!hasPlayerPropertyCard(currentPlayer, obj.id)) {
     console.log("this property does not belong to you");
     return;
   }
 
-  let inGamePropertyById = getInGamePropertyById(currentPlayer, id)!;
+  switch (obj.type) {
+    case "property": {
+      let inGamePropertyById = getInGamePropertyById(currentPlayer, obj.id)!;
 
-  if (inGamePropertyById.hotelCount === 1) {
-    currentPlayer.money += inGamePropertyById.property.hotelPrice / 2;
-    inGamePropertyById.hotelCount = 0;
-    inGamePropertyById.houseCount = 4;
+      if (inGamePropertyById.hotelCount === 1) {
+        currentPlayer.money += inGamePropertyById.property.hotelPrice / 2;
+        inGamePropertyById.hotelCount = 0;
+        inGamePropertyById.houseCount = 4;
 
-    console.log(
-      `${currentPlayer.color} sold 1 hotel to bank for ${inGamePropertyById.property.hotelPrice / 2}`,
-    );
+        console.log(
+          `${currentPlayer.color} sold 1 hotel to bank for ${inGamePropertyById.property.hotelPrice / 2}`,
+        );
 
-    return;
+        return;
+      }
+
+      if (inGamePropertyById.houseCount >= 1) {
+        currentPlayer.money += inGamePropertyById.property.housePrice / 2;
+        inGamePropertyById.houseCount -= 1;
+
+        console.log(
+          `${currentPlayer.color} sold 1 house to bank for ${inGamePropertyById.property.housePrice / 2}`,
+        );
+
+        return;
+      }
+
+      currentPlayer.money += inGamePropertyById.property.purchasePrice / 2;
+      removePropertyCardFromPlayer(currentPlayer, obj.id);
+
+      console.log(
+        `${currentPlayer.color} sold ${inGamePropertyById.property.street} to bank for ${inGamePropertyById.property.purchasePrice / 2}`,
+      );
+
+      break;
+    }
+    case "line": {
+      currentPlayer.money += 80;
+      removeLineCardFromPlayer(currentPlayer, obj.id);
+
+      break;
+    }
+    default: {
+      currentPlayer.money += 80;
+      removeCompanyCardFromPlayer(currentPlayer, obj.id);
+
+      break;
+    }
   }
-
-  if (inGamePropertyById.houseCount >= 1) {
-    currentPlayer.money += inGamePropertyById.property.housePrice / 2;
-    inGamePropertyById.houseCount -= 1;
-
-    console.log(
-      `${currentPlayer.color} sold 1 house to bank for ${inGamePropertyById.property.housePrice / 2}`,
-    );
-
-    return;
-  }
-
-  currentPlayer.money += inGamePropertyById.property.purchasePrice / 2;
-  removePropertyCardFromPlayer(currentPlayer, id);
-
-  console.log(
-    `${currentPlayer.color} sold ${inGamePropertyById.property.street} to bank for ${inGamePropertyById.property.purchasePrice / 2}`,
-  );
 }
