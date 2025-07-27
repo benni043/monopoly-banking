@@ -110,10 +110,12 @@ export function activateRisikoCard(game: Game, id: number) {
     case 14: {
       activatePropertyLevy(game);
       console.log("property levy after risiko card");
+      console.log(currentPlayer.money);
       break;
     }
     case 15: {
       payHouseAndHotelPriceSum(currentPlayer);
+      console.log(currentPlayer.money);
       console.log("payd for all houses");
       break;
     }
