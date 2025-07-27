@@ -1,28 +1,30 @@
+import type { CardType } from "~/utils/sites/all";
+
 export interface Line {
   id: number;
-  type: string;
+  type: CardType;
   name: string;
 }
 
 export const lines: Line[] = [
   {
     id: 18,
-    type: "Linie",
+    type: "line",
     name: "Wien-Innsbruck",
   },
   {
     id: 8,
-    type: "Linie",
+    type: "line",
     name: "Wien-Graz",
   },
   {
     id: 24,
-    type: "Linie",
+    type: "line",
     name: "Glocknerstraße",
   },
   {
     id: 13,
-    type: "Linie",
+    type: "line",
     name: "Wien-Budapest",
   },
 ];

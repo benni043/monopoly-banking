@@ -1,5 +1,8 @@
+import type { CardType } from "~/utils/sites/all";
+
 export interface Property {
   id: number;
+  type: CardType;
   color: string;
   state: string;
   street: string;
@@ -29,6 +32,7 @@ export const properties: Property[] = [
     purchasePrice: 120,
     housePrice: 50,
     hotelPrice: 50,
+    type: "property",
   },
   {
     id: 40,
@@ -44,6 +48,7 @@ export const properties: Property[] = [
     purchasePrice: 180,
     housePrice: 100,
     hotelPrice: 100,
+    type: "property",
   },
   {
     id: 2,
@@ -59,6 +64,7 @@ export const properties: Property[] = [
     purchasePrice: 220,
     housePrice: 160,
     hotelPrice: 160,
+    type: "property",
   },
   {
     id: 5,
@@ -74,6 +80,7 @@ export const properties: Property[] = [
     purchasePrice: 300,
     housePrice: 200,
     hotelPrice: 200,
+    type: "property",
   },
   {
     id: 6,
@@ -89,6 +96,7 @@ export const properties: Property[] = [
     purchasePrice: 250,
     housePrice: 150,
     hotelPrice: 140,
+    type: "property",
   },
   {
     id: 7,
@@ -104,6 +112,7 @@ export const properties: Property[] = [
     purchasePrice: 220,
     housePrice: 130,
     hotelPrice: 130,
+    type: "property",
   },
   {
     id: 12,
@@ -119,6 +128,7 @@ export const properties: Property[] = [
     purchasePrice: 220,
     housePrice: 160,
     hotelPrice: 160,
+    type: "property",
   },
   {
     id: 10,
@@ -134,6 +144,7 @@ export const properties: Property[] = [
     purchasePrice: 100,
     housePrice: 50,
     hotelPrice: 50,
+    type: "property",
   },
   {
     id: 22,
@@ -149,6 +160,7 @@ export const properties: Property[] = [
     purchasePrice: 220,
     housePrice: 160,
     hotelPrice: 160,
+    type: "property",
   },
   {
     id: 20,
@@ -164,6 +176,7 @@ export const properties: Property[] = [
     purchasePrice: 180,
     housePrice: 100,
     hotelPrice: 100,
+    type: "property",
   },
   {
     id: 19,
@@ -179,6 +192,7 @@ export const properties: Property[] = [
     purchasePrice: 300,
     housePrice: 200,
     hotelPrice: 200,
+    type: "property",
   },
   {
     id: 15,
@@ -194,6 +208,7 @@ export const properties: Property[] = [
     purchasePrice: 380,
     housePrice: 220,
     hotelPrice: 220,
+    type: "property",
   },
   {
     id: 17,
@@ -209,6 +224,7 @@ export const properties: Property[] = [
     purchasePrice: 250,
     housePrice: 150,
     hotelPrice: 140,
+    type: "property",
   },
   {
     id: 16,
@@ -224,6 +240,7 @@ export const properties: Property[] = [
     purchasePrice: 350,
     housePrice: 220,
     hotelPrice: 220,
+    type: "property",
   },
   {
     id: 26,
@@ -239,6 +256,7 @@ export const properties: Property[] = [
     purchasePrice: 240,
     housePrice: 140,
     hotelPrice: 130,
+    type: "property",
   },
   {
     id: 27,
@@ -254,6 +272,7 @@ export const properties: Property[] = [
     purchasePrice: 250,
     housePrice: 150,
     hotelPrice: 140,
+    type: "property",
   },
   {
     id: 25,
@@ -269,6 +288,7 @@ export const properties: Property[] = [
     purchasePrice: 250,
     housePrice: 150,
     hotelPrice: 140,
+    type: "property",
   },
   {
     id: 30,
@@ -284,6 +304,7 @@ export const properties: Property[] = [
     purchasePrice: 200,
     housePrice: 110,
     hotelPrice: 110,
+    type: "property",
   },
   {
     id: 32,
@@ -299,6 +320,7 @@ export const properties: Property[] = [
     purchasePrice: 210,
     housePrice: 120,
     hotelPrice: 150,
+    type: "property",
   },
   {
     id: 29,
@@ -314,6 +336,7 @@ export const properties: Property[] = [
     purchasePrice: 140,
     housePrice: 100,
     hotelPrice: 100,
+    type: "property",
   },
   {
     id: 36,
@@ -329,6 +352,7 @@ export const properties: Property[] = [
     purchasePrice: 250,
     housePrice: 150,
     hotelPrice: 140,
+    type: "property",
   },
   {
     id: 35,
@@ -344,6 +368,7 @@ export const properties: Property[] = [
     purchasePrice: 300,
     housePrice: 200,
     hotelPrice: 200,
+    type: "property",
   },
   {
     id: 37,
@@ -359,6 +384,7 @@ export const properties: Property[] = [
     purchasePrice: 300,
     housePrice: 300,
     hotelPrice: 200,
+    type: "property",
   },
 ];
 

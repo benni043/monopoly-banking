@@ -2,6 +2,7 @@ import { hasPlayerPropertyCard } from "~/utils/player";
 import { properties, type Property } from "~/utils/sites/property";
 import { companies, type Company } from "~/utils/sites/companies";
 import { type Line, lines } from "~/utils/sites/lines";
+import type { CardType } from "~/utils/sites/all";
 
 export interface Game {
   players: Player[];
@@ -18,7 +19,10 @@ export interface Game {
     active: boolean;
     tradePlayer: Player | undefined;
     tradeAmount: number | undefined;
-    tradeCardIds: number[];
+    tradeCardIds: {
+      id: number;
+      type: CardType;
+    }[];
   };
 
   cards: {
@@ -114,7 +118,7 @@ export function payAndTrade(game: Game, amount: number) {
   let firstResult = null;
 
   for (let tradeCardId of game.trade.tradeCardIds) {
-    const result = hasPlayerPropertyCard(currentPlayer, tradeCardId);
+    const result = hasPlayerPropertyCard(currentPlayer, tradeCardId.id);
 
     if (firstResult === null) {
       firstResult = result;
@@ -179,30 +183,41 @@ export function tradeProperty(
   game: Game,
   addProperty: boolean,
   currentPlayer: Player,
-  ids: number[],
+  ids: { id: number; type: CardType }[],
 ) {
-  for (let id of ids) {
-    if (addProperty) {
-      const inGameProperty = getInGamePropertyById(
-        game.trade.tradePlayer!,
-        id,
-      )!;
+  for (let obj of ids) {
+    switch (obj.type) {
+      case "property": {
+        if (addProperty) {
+          const inGameProperty = getInGamePropertyById(
+            game.trade.tradePlayer!,
+            obj.id,
+          )!;
 
-      currentPlayer.cards.properties.push(inGameProperty);
-      removePropertyCardFromPlayer(game.trade.tradePlayer!, id);
-    } else {
-      const inGameProperty = getInGamePropertyById(currentPlayer, id)!;
+          currentPlayer.cards.properties.push(inGameProperty);
+          removePropertyCardFromPlayer(game.trade.tradePlayer!, obj.id);
+        } else {
+          const inGameProperty = getInGamePropertyById(currentPlayer, obj.id)!;
 
-      game.trade.tradePlayer!.cards.properties.push(inGameProperty);
-      removePropertyCardFromPlayer(currentPlayer, id);
+          game.trade.tradePlayer!.cards.properties.push(inGameProperty);
+          removePropertyCardFromPlayer(currentPlayer, obj.id);
+        }
+
+        console.log("opponent: ");
+        game.trade.tradePlayer!.cards.properties.forEach((p) => console.log(p));
+
+        console.log("me: ");
+        currentPlayer.cards.properties.forEach((p) => console.log(p));
+        break;
+      }
+      case "line": {
+        break;
+      }
+      default: {
+        break;
+      }
     }
   }
-
-  console.log("opponent: ");
-  game.trade.tradePlayer!.cards.properties.forEach((p) => console.log(p));
-
-  console.log("me: ");
-  currentPlayer.cards.properties.forEach((p) => console.log(p));
 }
 
 export function getPlayerByCard(game: Game, id: number): Player | undefined {

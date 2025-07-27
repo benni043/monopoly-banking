@@ -1,5 +1,10 @@
 import { sellCardToBank } from "~/utils/special/bank";
-import { getPropertyById, removePropertyCardFromGamePool } from "~/utils/sites/property";
+import {
+  getPropertyById,
+  removePropertyCardFromGamePool,
+} from "~/utils/sites/property";
+
+export type CardType = "line" | "company" | "property";
 
 export function activatePropertyCard(game: Game, id: number) {
   if (game.currentPlayerColor === undefined) {
@@ -25,7 +30,7 @@ export function activatePropertyCard(game: Game, id: number) {
   }
 
   if (game.trade.active) {
-    game.trade.tradeCardIds.push(id);
+    game.trade.tradeCardIds.push({ id: id, type: "property" });
 
     console.log(`${id} was added to trade list`);
 

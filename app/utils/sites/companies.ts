@@ -1,23 +1,25 @@
+import type { CardType } from "~/utils/sites/all";
+
 export interface Company {
   id: number;
-  type: string;
+  type: CardType;
   name: string;
 }
 
 export const companies: Company[] = [
   {
     id: 34,
-    type: "Betrieb",
+    type: "company",
     name: "Flugl. Wien-Venedig",
   },
   {
     id: 14,
-    type: "Betrieb",
+    type: "company",
     name: "Seilbahn",
   },
   {
     id: 4,
-    type: "Betrieb",
+    type: "company",
     name: "Elektr. Kraftwerk",
   },
 ];
