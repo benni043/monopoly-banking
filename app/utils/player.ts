@@ -107,3 +107,13 @@ export function removePropertyCardFromPlayer(player: Player, id: number) {
   const index = player.cards.properties.findIndex((p) => p.property.id === id);
   if (index !== -1) player.cards.properties.splice(index, 1);
 }
+
+export function removeLineCardFromPlayer(player: Player, id: number) {
+  const index = player.cards.lines.findIndex((l) => l.id === id);
+  if (index !== -1) player.cards.lines.splice(index, 1);
+}
+
+export function removeCompanyCardFromPlayer(player: Player, id: number) {
+  const index = player.cards.companies.findIndex((c) => c.id === id);
+  if (index !== -1) player.cards.companies.splice(index, 1);
+}

@@ -1,7 +1,15 @@
-import { hasPlayerPropertyCard } from "~/utils/player";
+import {
+  hasPlayerPropertyCard,
+  removeCompanyCardFromPlayer,
+  removeLineCardFromPlayer,
+} from "~/utils/player";
 import { properties, type Property } from "~/utils/sites/property";
-import { companies, type Company } from "~/utils/sites/companies";
-import { type Line, lines } from "~/utils/sites/lines";
+import {
+  companies,
+  type Company,
+  getCompanyById,
+} from "~/utils/sites/companies";
+import { getLineById, type Line, lines } from "~/utils/sites/lines";
 import type { CardType } from "~/utils/sites/all";
 
 export interface Game {
@@ -211,9 +219,39 @@ export function tradeProperty(
         break;
       }
       case "line": {
+        const lineById = getLineById(obj.id)!;
+
+        if (addProperty) {
+          currentPlayer.cards.lines.push(lineById);
+          removeLineCardFromPlayer(game.trade.tradePlayer!, obj.id);
+        } else {
+          game.trade.tradePlayer!.cards.lines.push(lineById);
+          removeLineCardFromPlayer(currentPlayer, obj.id);
+        }
+
+        console.log("opponent: ");
+        game.trade.tradePlayer!.cards.lines.forEach((p) => console.log(p));
+
+        console.log("me: ");
+        currentPlayer.cards.lines.forEach((p) => console.log(p));
         break;
       }
       default: {
+        const companyById = getCompanyById(obj.id)!;
+
+        if (addProperty) {
+          currentPlayer.cards.companies.push(companyById);
+          removeCompanyCardFromPlayer(game.trade.tradePlayer!, obj.id);
+        } else {
+          game.trade.tradePlayer!.cards.companies.push(companyById);
+          removeCompanyCardFromPlayer(currentPlayer, obj.id);
+        }
+
+        console.log("opponent: ");
+        game.trade.tradePlayer!.cards.companies.forEach((p) => console.log(p));
+
+        console.log("me: ");
+        currentPlayer.cards.companies.forEach((p) => console.log(p));
         break;
       }
     }
