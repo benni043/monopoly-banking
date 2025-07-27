@@ -206,15 +206,18 @@ export function tradeProperty(
 }
 
 export function getPlayerByCard(game: Game, id: number): Player | undefined {
-  return game.players.find((player) =>
-    player.cards.properties.some((property) => property.property.id === id),
+  return game.players.find(
+    (player) =>
+      player.cards.properties.some((property) => property.property.id === id) ||
+      player.cards.lines.some((line) => line.id === id) ||
+      player.cards.companies.some((company) => company.id === id),
   );
 }
 
 export function isCardAvailable(game: Game, id: number): boolean {
   return (
     game.cards.properties.some((p) => p.id === id) ||
-    game.cards.lines.some((c) => c.id === id) ||
+    game.cards.lines.some((l) => l.id === id) ||
     game.cards.companies.some((c) => c.id === id)
   );
 }
@@ -224,7 +227,11 @@ export function isCardOwnedByCurrentPlayer(game: Game, id: number): boolean {
   const player = getPlayer(game, game.currentPlayerColor);
   if (!player) return false;
 
-  return player.cards.properties.some((p) => p.property.id === id);
+  return (
+    player.cards.properties.some((p) => p.property.id === id) ||
+    player.cards.lines.some((l) => l.id === id) ||
+    player.cards.companies.some((c) => c.id === id)
+  );
 }
 
 export function checkIfPlayerAlreadyInGame(game: Game, color: Color): boolean {
